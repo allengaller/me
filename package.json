@@ -1,0 +1,22 @@
+{
+  "name": "me",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "update:profile": "node scripts/update-profile.js",
+    "add:project": "node scripts/add-project.js",
+    "validate": "node scripts/validate.js"
+  },
+  "dependencies": {
+    "astro": "^4.16.17"
+  },
+  "overrides": {
+    "aria-query": "^5.3.2",
+    "axobject-query": "^3.2.1"
+  }
+}

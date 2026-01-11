@@ -1,0 +1,111 @@
+---
+// 获取配置
+import config from '../config/profile.json';
+const profile = config.profile;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={profile.about} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{profile.name} | {profile.title}</title>
+  </head>
+  <body>
+    <script>
+      // Language switcher functionality
+      let lang = localStorage.getItem('lang') || 'en';
+
+      function setLanguage(newLang) {
+        lang = newLang;
+        localStorage.setItem('lang', lang);
+        updatePage();
+      }
+
+      function updatePage() {
+        // Update text content based on language
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+          const zhText = el.getAttribute('data-zh');
+          const enText = el.getAttribute('data-en');
+          if (lang === 'zh' && zhText) {
+            el.textContent = zhText;
+          } else if (enText) {
+            el.textContent = enText;
+          }
+        });
+
+        // Update language switcher button
+        const langBtn = document.getElementById('lang-switcher');
+        if (langBtn) {
+          langBtn.textContent = lang === 'en' ? '🌐 中文' : '🌐 EN';
+        }
+      }
+
+      // Initialize on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        updatePage();
+      });
+
+      // Expose function to global scope
+      window.setLanguage = function() {
+        setLanguage(lang === 'en' ? 'zh' : 'en');
+      };
+    </script>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg-primary: #0a0e27;
+    --bg-secondary: #111827;
+    --bg-tertiary: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.3);
+    --accent-secondary: #8b5cf6;
+    --border: rgba(255, 255, 255, 0.1);
+    --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: white;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  a:hover {
+    color: var(--accent-secondary);
+  }
+</style>
