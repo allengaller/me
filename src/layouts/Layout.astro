@@ -17,7 +17,7 @@ const profile = config.profile;
   <body>
     <script>
       // Language switcher functionality
-      let lang = localStorage.getItem('lang') || 'en';
+      let lang = localStorage.getItem('lang') || 'zh';
 
       function setLanguage(newLang) {
         lang = newLang;
@@ -41,7 +41,7 @@ const profile = config.profile;
         // Update language switcher button
         const langBtn = document.getElementById('lang-switcher');
         if (langBtn) {
-          langBtn.textContent = lang === 'en' ? '🌐 中文' : '🌐 EN';
+          langBtn.textContent = lang === 'zh' ? '🌐 EN' : '🌐 中文';
         }
       }
 
@@ -52,7 +52,7 @@ const profile = config.profile;
 
       // Expose function to global scope
       window.setLanguage = function() {
-        setLanguage(lang === 'en' ? 'zh' : 'en');
+        setLanguage(lang === 'zh' ? 'en' : 'zh');
       };
     </script>
     <slot />
