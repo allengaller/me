@@ -15,6 +15,19 @@ const profile = config.profile;
     <title>{profile.name} | {profile.title}</title>
   </head>
   <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="/" class="nav-logo">
+          {profile.name}
+        </a>
+        <div class="nav-links">
+          <a href="/" data-i18n data-en="Home" data-zh="首页">Home</a>
+          <a href="/github" data-i18n data-en="GitHub" data-zh="GitHub">GitHub</a>
+        </div>
+      </div>
+    </nav>
+
     <script>
       // Language switcher functionality
       let lang = localStorage.getItem('lang') || 'zh';
@@ -107,5 +120,59 @@ const profile = config.profile;
 
   a:hover {
     color: var(--accent-secondary);
+  }
+
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(17, 24, 39, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 1rem 2rem;
+  }
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-logo {
+    font-weight: 700;
+    font-size: 1.25rem;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .nav-links a {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .nav-links a:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      padding: 1rem;
+    }
+
+    .nav-container {
+      flex-direction: column;
+      gap: 1rem;
+    }
   }
 </style>

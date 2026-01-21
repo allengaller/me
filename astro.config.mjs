@@ -12,6 +12,11 @@ export default defineConfig({
   vite: {
     optimizeDeps: {
       exclude: ['aria-query', 'axobject-query']
+    },
+    build: {
+      rollupOptions: {
+        external: ['aria-query', 'axobject-query']
+      }
     }
   }
 });
