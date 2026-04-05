@@ -1,0 +1,383 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SoulExport from '../../components/export/SoulExport.astro';
+---
+
+<Layout>
+  <main class="complete-page">
+    <div class="complete-container">
+      <div class="success-animation">
+        <div class="checkmark">✓</div>
+      </div>
+      
+      <h1>档案创建完成!</h1>
+      <p class="subtitle">您的个人档案已准备就绪，现在可以导出使用了</p>
+      
+      <div class="stats-cards">
+        <div class="stat-card">
+          <span class="stat-value" id="profile-name">-</span>
+          <span class="stat-label">姓名</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="skills-count">0</span>
+          <span class="stat-label">技能</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="projects-count">0</span>
+          <span class="stat-label">项目</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="exp-count">0</span>
+          <span class="stat-label">经历</span>
+        </div>
+      </div>
+      
+      <div class="exports-section">
+        <h2>📦 导出您的档案</h2>
+        <p>选择您需要的格式，一键下载</p>
+        
+        <div class="exports-grid">
+          <SoulExport />
+          
+          <div class="export-card">
+            <div class="export-header">
+              <div class="export-icon json-icon">{ }</div>
+              <div>
+                <h3>JSON</h3>
+                <p>结构化数据格式，便于程序处理</p>
+              </div>
+            </div>
+            <button id="download-json" class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              下载 profile.json
+            </button>
+          </div>
+          
+          <div class="export-card">
+            <div class="export-header">
+              <div class="export-icon yaml-icon">YML</div>
+              <div>
+                <h3>YAML</h3>
+                <p>人类友好的数据序列化格式</p>
+              </div>
+            </div>
+            <button id="download-yaml" class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              下载 profile.yaml
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="actions-section">
+        <a href="/preview" target="_blank" class="btn btn-preview">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          预览主页
+        </a>
+        <a href="/wizard" class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          返回开始
+        </a>
+      </div>
+      
+      <div class="reset-section">
+        <button id="reset-btn" class="btn-reset">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          清除数据重新开始
+        </button>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { loadDraft, clearDraft } from '../../utils/storage.js';
+  import { downloadJson } from '../../utils/exporters/json.js';
+  import { downloadYaml } from '../../utils/exporters/yaml.js';
+  
+  // 加载并显示统计
+  const draft = loadDraft();
+  
+  if (draft) {
+    document.getElementById('profile-name').textContent = draft.profile?.name || '-';
+    document.getElementById('skills-count').textContent = draft.skills?.length || 0;
+    document.getElementById('projects-count').textContent = draft.projects?.length || 0;
+    document.getElementById('exp-count').textContent = draft.experience?.length || 0;
+  }
+  
+  // 下载按钮
+  document.getElementById('download-json').addEventListener('click', () => {
+    if (draft) {
+      downloadJson(draft);
+    } else {
+      alert('暂无数据');
+    }
+  });
+  
+  document.getElementById('download-yaml').addEventListener('click', () => {
+    if (draft) {
+      downloadYaml(draft);
+    } else {
+      alert('暂无数据');
+    }
+  });
+  
+  // 重置按钮
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    if (confirm('确定要清除所有数据吗？此操作不可恢复。')) {
+      clearDraft();
+      window.location.href = '/wizard';
+    }
+  });
+</script>
+
+<style>
+  .complete-page {
+    min-height: 100vh;
+    padding: 4rem 2rem;
+  }
+  
+  .complete-container {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .success-animation {
+    margin-bottom: 1.5rem;
+  }
+  
+  .checkmark {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white;
+    margin: 0 auto;
+    box-shadow: 0 8px 32px rgba(34, 197, 94, 0.4);
+    animation: scale-in 0.5s ease-out;
+  }
+  
+  @keyframes scale-in {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  h1 {
+    font-size: clamp(2rem, 5vw, 2.5rem);
+    font-weight: 800;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+  }
+  
+  .stats-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .stat-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+  
+  .exports-section {
+    margin-bottom: 3rem;
+  }
+  
+  .exports-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .exports-section > p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+  
+  .exports-grid {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .export-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: left;
+  }
+  
+  .export-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .export-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+  
+  .json-icon {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+  
+  .yaml-icon {
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--accent-secondary);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+  }
+  
+  .export-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  .export-header p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0.25rem 0 0 0;
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  
+  .actions-section {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .btn-preview {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  
+  .btn-preview:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+  }
+  
+  .reset-section {
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  
+  .btn-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-reset:hover {
+    color: #ef4444;
+  }
+  
+  @media (max-width: 768px) {
+    .stats-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

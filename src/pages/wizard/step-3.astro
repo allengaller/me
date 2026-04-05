@@ -1,0 +1,303 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProgressBar from '../../components/wizard/ProgressBar.astro';
+import WizardNav from '../../components/wizard/WizardNav.astro';
+---
+
+<Layout>
+  <main class="wizard-page">
+    <div class="wizard-container">
+      <ProgressBar currentStep={3} totalSteps={6} />
+      
+      <div class="step-header">
+        <h1>技能专长</h1>
+        <p>展示您的专业技能和技术栈</p>
+      </div>
+      
+      <form id="step-3-form" class="step-form">
+        <div class="skills-list" id="skills-list">
+          <!-- 动态生成技能类别 -->
+        </div>
+        
+        <button type="button" class="btn btn-add" id="add-skill">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          添加技能类别
+        </button>
+        
+        <WizardNav 
+          prevUrl="/wizard/step-2" 
+          nextUrl="/wizard/step-4" 
+          nextText="下一步" 
+        />
+      </form>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { loadDraft, saveDraft } from '../../utils/storage.js';
+  
+  const skillsList = document.getElementById('skills-list');
+  const addBtn = document.getElementById('add-skill');
+  
+  const levels = ['Expert', 'Advanced', 'Intermediate', 'Beginner'];
+  const levelsZh = ['专家', '高级', '中级', '初级'];
+  
+  function createSkillItem(data = {}) {
+    const div = document.createElement('div');
+    div.className = 'skill-item';
+    div.innerHTML = `
+      <div class="skill-header">
+        <input type="text" class="skill-name" name="name" placeholder="技能类别 (如: 前端开发)" value="${data.name || ''}" required>
+        <select class="skill-level" name="level">
+          ${levels.map((l, i) => `<option value="${l}" ${data.level === l ? 'selected' : ''}>${levelsZh[i]} (${l})</option>`).join('')}
+        </select>
+        <button type="button" class="btn-remove">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="tech-section">
+        <label>技术栈 (用逗号分隔)</label>
+        <input type="text" class="tech-input" placeholder="React, Vue, TypeScript..." value="${data.technologies?.join(', ') || ''}">
+        <div class="tech-tags"></div>
+      </div>
+    `;
+    
+    const techInput = div.querySelector('.tech-input');
+    const techTags = div.querySelector('.tech-tags');
+    
+    function updateTechTags() {
+      const techs = techInput.value.split(',').map(t => t.trim()).filter(t => t);
+      techTags.innerHTML = techs.map(t => `<span class="tech-tag">${t}</span>`).join('');
+    }
+    
+    techInput.addEventListener('input', updateTechTags);
+    updateTechTags();
+    
+    div.querySelector('.btn-remove').addEventListener('click', () => {
+      div.remove();
+      saveCurrentData();
+    });
+    
+    div.querySelectorAll('input, select').forEach(el => {
+      el.addEventListener('change', saveCurrentData);
+    });
+    
+    return div;
+  }
+  
+  function saveCurrentData() {
+    const items = skillsList.querySelectorAll('.skill-item');
+    const skills = [];
+    
+    items.forEach(item => {
+      const name = item.querySelector('[name="name"]').value;
+      const level = item.querySelector('[name="level"]').value;
+      const techInput = item.querySelector('.tech-input').value;
+      const technologies = techInput.split(',').map(t => t.trim()).filter(t => t);
+      
+      if (name) {
+        const levelIndex = levels.indexOf(level);
+        skills.push({
+          name,
+          name_zh: name,
+          level,
+          level_zh: levelsZh[levelIndex],
+          technologies
+        });
+      }
+    });
+    
+    const existing = loadDraft() || {};
+    existing.skills = skills;
+    saveDraft(existing);
+  }
+  
+  // 加载草稿数据
+  const draft = loadDraft();
+  if (draft?.skills?.length > 0) {
+    draft.skills.forEach(item => {
+      skillsList.appendChild(createSkillItem(item));
+    });
+  } else {
+    // 默认添加一项
+    skillsList.appendChild(createSkillItem());
+  }
+  
+  // 添加按钮
+  addBtn.addEventListener('click', () => {
+    skillsList.appendChild(createSkillItem());
+  });
+  
+  // 表单提交
+  document.getElementById('step-3-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveCurrentData();
+    window.location.href = '/wizard/step-4';
+  });
+</script>
+
+<style>
+  .wizard-page {
+    min-height: 100vh;
+    padding: 6rem 2rem 4rem;
+  }
+  
+  .wizard-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .step-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .step-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .step-header p {
+    color: var(--text-muted);
+  }
+  
+  .step-form {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+  
+  .skills-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .skill-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+  
+  .skill-header {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .skill-name {
+    flex: 1;
+    padding: 0.625rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+  }
+  
+  .skill-level {
+    width: 140px;
+    padding: 0.625rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+  
+  .skill-name:focus,
+  .skill-level:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  
+  .btn-remove {
+    padding: 0.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 6px;
+    color: #ef4444;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-remove:hover {
+    background: rgba(239, 68, 68, 0.2);
+  }
+  
+  .tech-section label {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+  
+  .tech-input {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .tech-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .tech-tag {
+    padding: 0.375rem 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+  }
+  
+  .btn-add {
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--bg-tertiary);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .btn-add:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+</style>

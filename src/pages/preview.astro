@@ -1,0 +1,269 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <main class="preview-page">
+    <div class="preview-header">
+      <h1>📱 实时预览</h1>
+      <p>这是您的个人主页预览效果</p>
+      <div class="preview-actions">
+        <a href="/wizard/complete" class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          返回编辑
+        </a>
+      </div>
+    </div>
+    
+    <div class="preview-container">
+      <div class="preview-frame-wrapper">
+        <div class="device-frame">
+          <div class="device-header">
+            <div class="device-buttons">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <span class="device-title">个人主页预览</span>
+            <div class="device-url">localhost:4321</div>
+          </div>
+          <iframe id="preview-iframe" src="/" frameborder="0"></iframe>
+        </div>
+      </div>
+    </div>
+    
+    <div class="preview-info">
+      <div class="info-card">
+        <h3>💡 提示</h3>
+        <ul>
+          <li>此预览使用您已保存的数据实时渲染</li>
+          <li>支持响应式布局，可在不同设备上良好展示</li>
+          <li>完成后可导出 SOUL.md 用于其他平台</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { loadDraft } from '../utils/storage.js';
+  
+  // 检查是否有数据
+  const draft = loadDraft();
+  const iframe = document.getElementById('preview-iframe');
+  
+  if (!draft) {
+    iframe.srcdoc = `
+      <html>
+        <head>
+          <style>
+            body {
+              background: #0a0e27;
+              color: #9ca3af;
+              font-family: system-ui, sans-serif;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 100vh;
+              margin: 0;
+              text-align: center;
+              padding: 2rem;
+            }
+            .empty-state {
+              max-width: 300px;
+            }
+            .empty-icon {
+              font-size: 4rem;
+              margin-bottom: 1rem;
+            }
+            h2 {
+              color: #f9fafb;
+              margin-bottom: 0.5rem;
+            }
+            p {
+              line-height: 1.6;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h2>暂无数据</h2>
+            <p>请先完成向导填写，然后回来预览效果</p>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+</script>
+
+<style>
+  .preview-page {
+    min-height: 100vh;
+    padding: 6rem 2rem 4rem;
+  }
+  
+  .preview-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .preview-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .preview-header p {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+  
+  .preview-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  
+  .preview-container {
+    max-width: 1200px;
+    margin: 0 auto 3rem;
+  }
+  
+  .preview-frame-wrapper {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .device-frame {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .device-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .device-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .device-buttons span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  
+  .device-buttons span:nth-child(1) { background: #ef4444; }
+  .device-buttons span:nth-child(2) { background: #f59e0b; }
+  .device-buttons span:nth-child(3) { background: #22c55e; }
+  
+  .device-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  
+  .device-url {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--bg-primary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+  }
+  
+  .device-frame iframe {
+    width: 100%;
+    height: 600px;
+    background: var(--bg-primary);
+  }
+  
+  .preview-info {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .info-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  
+  .info-card h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  
+  .info-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .info-card li {
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    padding-left: 1.5rem;
+    position: relative;
+  }
+  
+  .info-card li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+  
+  @media (max-width: 768px) {
+    .device-frame iframe {
+      height: 400px;
+    }
+    
+    .device-title,
+    .device-url {
+      display: none;
+    }
+  }
+</style>

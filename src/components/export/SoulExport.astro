@@ -1,0 +1,212 @@
+---
+---
+
+<div class="soul-export">
+  <div class="export-header">
+    <div class="export-icon">🦞</div>
+    <div>
+      <h3>SOUL.md</h3>
+      <p>标准化的个人档案 Markdown 文件</p>
+    </div>
+  </div>
+  
+  <div class="export-preview">
+    <div class="preview-header">
+      <span>文件预览</span>
+      <span class="file-badge">SOUL.md</span>
+    </div>
+    <pre id="soul-preview" class="preview-content"><code>点击"生成预览"查看内容...</code></pre>
+  </div>
+  
+  <div class="export-actions">
+    <button id="preview-btn" class="btn btn-secondary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+      生成预览
+    </button>
+    <button id="download-btn" class="btn btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      下载 SOUL.md
+    </button>
+  </div>
+</div>
+
+<script>
+  import { generateSoulMd, downloadSoulMd } from '../../utils/soul-generator.js';
+  import { loadDraft } from '../../utils/storage.js';
+  
+  const previewBtn = document.getElementById('preview-btn');
+  const downloadBtn = document.getElementById('download-btn');
+  const previewEl = document.getElementById('soul-preview');
+  
+  let currentProfile = null;
+  
+  function loadProfile() {
+    const draft = loadDraft();
+    if (draft) {
+      currentProfile = draft;
+      return true;
+    }
+    return false;
+  }
+  
+  previewBtn.addEventListener('click', () => {
+    if (!loadProfile()) {
+      previewEl.innerHTML = '<code class="error">暂无数据，请先完成向导填写</code>';
+      return;
+    }
+    
+    const content = generateSoulMd(currentProfile);
+    // 转义 HTML 以便显示
+    const escaped = content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    
+    previewEl.innerHTML = `<code>${escaped}</code>`;
+  });
+  
+  downloadBtn.addEventListener('click', () => {
+    if (!loadProfile()) {
+      alert('暂无数据，请先完成向导填写');
+      return;
+    }
+    
+    downloadSoulMd(currentProfile);
+  });
+</script>
+
+<style>
+  .soul-export {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  
+  .export-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .export-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+  
+  .export-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  
+  .export-header p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0.25rem 0 0 0;
+  }
+  
+  .export-preview {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  
+  .file-badge {
+    background: var(--accent);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .preview-content {
+    margin: 0;
+    padding: 1rem;
+    max-height: 300px;
+    overflow: auto;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  
+  .preview-content code {
+    color: var(--text-secondary);
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  
+  .preview-content code.error {
+    color: #ef4444;
+  }
+  
+  .export-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+  }
+</style>

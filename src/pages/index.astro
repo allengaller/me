@@ -7,50 +7,51 @@ const { profile, social, skills, projects, experience } = config;
 
 <Layout>
   <main>
-    <!-- Language Switcher -->
-    <button id="lang-switcher" class="lang-switcher" onclick="window.setLanguage()">
-      🌐 EN
-    </button>
-
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="hero-content">
-        <div class="avatar">
-          {profile.avatar ? (
-            <img src={profile.avatar} alt={profile.name} />
-          ) : (
-            <div class="avatar-placeholder">
-              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </div>
-          )}
-        </div>
-        <h1 class="name" data-i18n data-en={profile.name} data-zh={profile.name_zh || profile.name}>{profile.name}</h1>
-        <p class="title" data-i18n data-en={profile.title} data-zh={profile.title_zh}>{profile.title}</p>
-        <p class="location">📍 <span data-i18n data-en={profile.location} data-zh={profile.location_zh}>{profile.location}</span></p>
-        <p class="about" data-i18n data-en={profile.about} data-zh={profile.about_zh}>{profile.about}</p>
-        <div class="social-links">
-          {social.map(link => (
-            <a href={link.url} target="_blank" rel="noopener noreferrer" class="social-link" aria-label={link.platform}>
-              <span set:html={link.icon} />
-            </a>
-          ))}
-        </div>
-        <div class="cta-buttons">
-          {profile.contact && (
-            <a href={`mailto:${profile.contact}`} class="btn primary" data-i18n data-en="Get in Touch" data-zh="联系我">Get in Touch</a>
-          )}
-          <a href="/github" class="btn github">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+    <!-- ME Tool Hero Section -->
+    <section class="tool-hero">
+      <div class="tool-content">
+        <div class="tool-badge">🚀 开源工具</div>
+        <h1 class="tool-title">
+          <span class="gradient-text">ME</span>
+          <span class="subtitle">个人档案生成器</span>
+        </h1>
+        <p class="tool-description">
+          通过友好的分步引导，创建属于您的 <strong>SOUL.md</strong> 个人档案。
+          <br>
+          支持跨平台导入导出，让信息在龙虾社区等平台间自由流动。
+        </p>
+        <div class="tool-actions">
+          <a href="/wizard" class="btn btn-primary btn-large">
+            开始创建
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
-            <span data-i18n data-en="View GitHub" data-zh="查看 GitHub">View GitHub</span>
           </a>
-          <a href="#projects" class="btn secondary" data-i18n data-en="View Work" data-zh="查看作品">View Work</a>
+          <a href="#preview" class="btn btn-secondary btn-large">
+            查看示例
+          </a>
+        </div>
+        
+        <div class="tool-features">
+          <div class="feature-tag">
+            <span>✨</span>
+            分步引导
+          </div>
+          <div class="feature-tag">
+            <span>💾</span>
+            自动保存
+          </div>
+          <div class="feature-tag">
+            <span>🦞</span>
+            社区集成
+          </div>
+          <div class="feature-tag">
+            <span>📦</span>
+            多格式导出
+          </div>
         </div>
       </div>
+      
       <div class="hero-bg">
         <div class="gradient-orb orb-1"></div>
         <div class="gradient-orb orb-2"></div>
@@ -58,98 +59,159 @@ const { profile, social, skills, projects, experience } = config;
       </div>
     </section>
 
-    <!-- Skills Section -->
-    <section id="skills" class="section">
+    <!-- Features Section -->
+    <section class="features-section">
       <div class="container">
-        <h2 class="section-title" data-i18n data-en="Technical Skills" data-zh="技术技能">Technical Skills</h2>
-        <div class="skills-grid">
-          {skills.map(skill => (
-            <div class="skill-card">
-              <h3 class="skill-name" data-i18n data-en={skill.name} data-zh={skill.name_zh || skill.name}>{skill.name}</h3>
-              <p class="skill-level" data-i18n data-en={skill.level} data-zh={skill.level_zh || skill.level}>{skill.level}</p>
-              <div class="skill-tags">
-                {skill.technologies.map(tech => (
-                  <span class="tag">{tech}</span>
-                ))}
-              </div>
-            </div>
-          ))}
+        <h2 class="section-title">为什么选择 ME?</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>分步引导</h3>
+            <p>6 步简单操作，从基础信息到社区集成，引导您创建完整的个人档案</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3>跨平台导入</h3>
+            <p>支持从 GitHub 等平台一键导入，自动填充您的公开资料</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🦞</div>
+            <h3>龙虾社区</h3>
+            <p>专为龙虾社区优化，轻松配置跨平台 ID，实现信息快速同步</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📄</div>
+            <h3>SOUL.md</h3>
+            <p>生成标准化的 SOUL.md 文件，成为您在开源世界的数字名片</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>本地存储</h3>
+            <p>所有数据保存在您的浏览器本地，无需上传服务器，隐私更安全</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <h3>精美主页</h3>
+            <p>自动生成美观的个人主页，支持响应式设计，完美展示您的档案</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="section">
+    <!-- Workflow Section -->
+    <section class="workflow-section">
       <div class="container">
-        <h2 class="section-title" data-i18n data-en="Featured Projects" data-zh="精选项目">Featured Projects</h2>
-        <div class="projects-grid">
-          {projects.map(project => (
-            <div class="project-card">
-              <div class="project-header">
-                <h3 class="project-title" data-i18n data-en={project.title} data-zh={project.title_zh || project.title}>{project.title}</h3>
-                <div class="project-links">
-                  {project.github && (
-                    <a href={project.github} target="_blank" rel="noopener noreferrer" class="icon-link">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                      </svg>
-                    </a>
-                  )}
-                  {project.live && (
-                    <a href={project.live} target="_blank" rel="noopener noreferrer" class="icon-link">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                      </svg>
-                    </a>
-                  )}
+        <h2 class="section-title">使用流程</h2>
+        <div class="workflow-steps">
+          <div class="workflow-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>填写信息</h3>
+              <p>通过 6 步向导填写您的个人信息、技能、项目和经历</p>
+            </div>
+          </div>
+          <div class="workflow-arrow">→</div>
+          <div class="workflow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>实时预览</h3>
+              <p>随时查看生成的个人主页效果，确保展示最佳形象</p>
+            </div>
+          </div>
+          <div class="workflow-arrow">→</div>
+          <div class="workflow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>导出使用</h3>
+              <p>下载 SOUL.md、JSON 或 YAML 格式，用于各平台展示</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Preview Section -->
+    <section id="preview" class="preview-section">
+      <div class="container">
+        <h2 class="section-title">示例展示</h2>
+        <p class="section-subtitle">以下是使用 ME 工具生成的个人主页示例</p>
+        
+        <!-- Original Profile Content -->
+        <div class="profile-preview">
+          <!-- Hero -->
+          <div class="preview-hero">
+            <div class="avatar">
+              {profile.avatar ? (
+                <img src={profile.avatar} alt={profile.name} />
+              ) : (
+                <div class="avatar-placeholder">
+                  <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
                 </div>
-              </div>
-              <p class="project-description" data-i18n data-en={project.description} data-zh={project.description_zh || project.description}>{project.description}</p>
-              <div class="project-tags">
-                {project.technologies.map(tech => (
-                  <span class="tag">{tech}</span>
-                ))}
-              </div>
-              {project.highlights && (
-                <ul class="project-highlights">
-                  {project.highlights.map((highlight, idx) => (
-                    <li data-i18n data-en={highlight} data-zh={project.highlights_zh?.[idx] || highlight}>{highlight}</li>
-                  ))}
-                </ul>
               )}
             </div>
-          ))}
+            <h2 class="preview-name">{profile.name}</h2>
+            <p class="preview-title">{profile.title}</p>
+            <p class="preview-location">📍 {profile.location}</p>
+            <p class="preview-about">{profile.about}</p>
+          </div>
+          
+          <!-- Skills Preview -->
+          <div class="preview-skills">
+            <h3>技能专长</h3>
+            <div class="skills-tags">
+              {skills.slice(0, 3).map(skill => (
+                skill.technologies.slice(0, 3).map(tech => (
+                  <span class="skill-tag">{tech}</span>
+                ))
+              ))}
+            </div>
+          </div>
+          
+          <!-- Projects Preview -->
+          <div class="preview-projects">
+            <h3>精选项目</h3>
+            <div class="projects-list">
+              {projects.slice(0, 2).map(project => (
+                <div class="project-mini">
+                  <h4>{project.title}</h4>
+                  <p>{project.description.substring(0, 80)}...</p>
+                  <div class="project-tech">
+                    {project.technologies.slice(0, 3).map(tech => (
+                      <span>{tech}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        <div class="preview-cta">
+          <a href="/wizard" class="btn btn-primary">
+            创建我的档案
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- Experience Section -->
-    <section id="experience" class="section">
+    <!-- CTA Section -->
+    <section class="cta-section">
       <div class="container">
-        <h2 class="section-title" data-i18n data-en="Experience" data-zh="工作经历">Experience</h2>
-        <div class="experience-timeline">
-          {experience.map((exp, index) => (
-            <div class="experience-item">
-              <div class="experience-marker"></div>
-              <div class="experience-content">
-                <div class="experience-header">
-                  <h3 class="experience-title" data-i18n data-en={exp.title} data-zh={exp.title_zh || exp.title}>{exp.title}</h3>
-                  <span class="experience-company" data-i18n data-en={exp.company} data-zh={exp.company_zh || exp.company}>{exp.company}</span>
-                </div>
-                <p class="experience-period">{exp.period}</p>
-                <p class="experience-description" data-i18n data-en={exp.description} data-zh={exp.description_zh || exp.description}>{exp.description}</p>
-                {exp.achievements && (
-                  <ul class="experience-achievements">
-                    {exp.achievements.map((achievement, idx) => (
-                      <li data-i18n data-en={achievement} data-zh={exp.achievements_zh?.[idx] || achievement}>{achievement}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          ))}
+        <div class="cta-content">
+          <h2>准备好创建您的档案了吗?</h2>
+          <p>完全免费，无需注册，数据本地存储</p>
+          <a href="/wizard" class="btn btn-primary btn-large">
+            立即开始
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </a>
         </div>
       </div>
     </section>
@@ -158,71 +220,182 @@ const { profile, social, skills, projects, experience } = config;
     <footer class="footer">
       <div class="container">
         <div class="footer-content">
-          <p>&copy; {new Date().getFullYear()} <span data-i18n data-en={profile.name} data-zh={profile.name_zh || profile.name}>{profile.name}</span>. <span data-i18n data-en="Built with Astro." data-zh="使用 Astro 构建。">Built with Astro.</span></p>
-          <div class="footer-links">
-            {social.map(link => (
-              <a href={link.url} target="_blank" rel="noopener noreferrer">{link.platform}</a>
-            ))}
+          <div class="footer-brand">
+            <span class="brand-logo">ME</span>
+            <span>个人档案生成器</span>
           </div>
+          <div class="footer-links">
+            <a href="/wizard">开始使用</a>
+            <a href="https://github.com" target="_blank">GitHub</a>
+            <a href="/preview">预览示例</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>Made with ❤️ for the community</p>
         </div>
       </div>
     </footer>
   </main>
 </Layout>
 
-
 <style>
-  .lang-switcher {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    padding: 0.5rem 1rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--accent);
-    border-radius: 8px;
-    color: var(--text-primary);
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .lang-switcher:hover {
-    background: var(--accent);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--accent-glow);
-  }
-
-  .hero {
+  /* Tool Hero Section */
+  .tool-hero {
     position: relative;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 6rem 2rem 4rem;
     overflow: hidden;
   }
-
+  
+  .tool-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 800px;
+  }
+  
+  .tool-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 100px;
+    color: var(--accent);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+  }
+  
+  .tool-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .gradient-text {
+    font-size: clamp(4rem, 12vw, 7rem);
+    font-weight: 900;
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  
+  .subtitle {
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  
+  .tool-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.8;
+  }
+  
+  .tool-description strong {
+    color: var(--accent);
+  }
+  
+  .tool-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .btn-large {
+    padding: 1rem 2.5rem;
+    font-size: 1.125rem;
+  }
+  
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+  }
+  
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    background: var(--bg-secondary);
+  }
+  
+  .tool-features {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .feature-tag {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  
+  .feature-tag span {
+    font-size: 1rem;
+  }
+  
+  /* Hero Background */
   .hero-bg {
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 0;
   }
-
+  
   .gradient-orb {
     position: absolute;
     border-radius: 50%;
     filter: blur(80px);
-    opacity: 0.5;
+    opacity: 0.4;
     animation: float 8s ease-in-out infinite;
   }
-
+  
   .orb-1 {
     width: 400px;
     height: 400px;
@@ -231,7 +404,7 @@ const { profile, social, skills, projects, experience } = config;
     right: -100px;
     animation-delay: 0s;
   }
-
+  
   .orb-2 {
     width: 300px;
     height: 300px;
@@ -240,7 +413,7 @@ const { profile, social, skills, projects, experience } = config;
     left: -50px;
     animation-delay: 2s;
   }
-
+  
   .orb-3 {
     width: 250px;
     height: 250px;
@@ -250,7 +423,7 @@ const { profile, social, skills, projects, experience } = config;
     transform: translate(-50%, -50%);
     animation-delay: 4s;
   }
-
+  
   @keyframes float {
     0%, 100% {
       transform: translate(0, 0) scale(1);
@@ -259,463 +432,389 @@ const { profile, social, skills, projects, experience } = config;
       transform: translate(30px, -30px) scale(1.1);
     }
   }
-
-  .hero-content {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    max-width: 800px;
-  }
-
-  .avatar {
-    margin-bottom: 2rem;
-  }
-
-  .avatar img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    border: 4px solid var(--accent);
-    box-shadow: 0 0 30px var(--accent-glow);
-    object-fit: cover;
-  }
-
-  .avatar-placeholder {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    border: 4px solid var(--accent);
-    box-shadow: 0 0 30px var(--accent-glow);
-    background: var(--bg-tertiary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    color: var(--text-muted);
-    transition: all 0.3s ease;
-  }
-
-  .avatar-placeholder:hover {
-    border-color: var(--accent-secondary);
-    color: var(--accent);
-    transform: scale(1.05);
-  }
-
-  .name {
-    font-size: clamp(2.5rem, 8vw, 4rem);
-    font-weight: 800;
-    background: var(--gradient-1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.02em;
-  }
-
-  .title {
-    font-size: clamp(1.25rem, 3vw, 1.75rem);
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-  }
-
-  .location {
-    font-size: 1rem;
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-  }
-
-  .about {
-    font-size: 1.125rem;
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto 2rem;
-    line-height: 1.8;
-  }
-
-  .social-links {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .social-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text-primary);
-    transition: all 0.3s ease;
-  }
-
-  .social-link:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow: 0 8px 24px var(--accent-glow);
-  }
-
-  .cta-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .btn {
-    padding: 0.875rem 2rem;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-  }
-
-  .btn.primary {
-    background: var(--accent);
-    color: white;
-    box-shadow: 0 4px 16px var(--accent-glow);
-  }
-
-  .btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px var(--accent-glow);
-  }
-
-  .btn.secondary {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    border: 1px solid var(--border);
-  }
-
-  .btn.secondary:hover {
-    border-color: var(--accent);
-    background: var(--bg-secondary);
-  }
-
-  .btn.github {
-    background: #24292e;
-    color: white;
-    border: 1px solid #24292e;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .btn.github:hover {
-    background: #0366d6;
-    border-color: #0366d6;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(3, 102, 214, 0.4);
-  }
-
-  .section {
+  
+  /* Features Section */
+  .features-section {
     padding: 6rem 2rem;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
   }
-
+  
   .container {
     max-width: 1200px;
     margin: 0 auto;
   }
-
+  
   .section-title {
     font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: 3rem;
     text-align: center;
+    margin-bottom: 3rem;
     background: var(--gradient-1);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-
-  .skills-grid {
+  
+  .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
   }
-
-  .skill-card {
-    background: var(--bg-secondary);
+  
+  .feature-card {
+    background: var(--bg-primary);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 2rem;
+    text-align: center;
     transition: all 0.3s ease;
   }
-
-  .skill-card:hover {
+  
+  .feature-card:hover {
     border-color: var(--accent);
     transform: translateY(-4px);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
   }
-
-  .skill-name {
+  
+  .feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .feature-card h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
     color: var(--text-primary);
+    margin-bottom: 0.75rem;
   }
-
-  .skill-level {
+  
+  .feature-card p {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  
+  /* Workflow Section */
+  .workflow-section {
+    padding: 6rem 2rem;
+  }
+  
+  .workflow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .workflow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    max-width: 280px;
+  }
+  
+  .step-number {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+  
+  .step-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .step-content p {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  
+  .workflow-arrow {
+    font-size: 2rem;
+    color: var(--accent);
+    opacity: 0.5;
+  }
+  
+  /* Preview Section */
+  .preview-section {
+    padding: 6rem 2rem;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+  }
+  
+  .section-subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 3rem;
+    font-size: 1.125rem;
+  }
+  
+  .profile-preview {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+  
+  .preview-hero {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .avatar {
+    margin-bottom: 1rem;
+  }
+  
+  .avatar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+    object-fit: cover;
+  }
+  
+  .avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid var(--accent);
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: var(--text-muted);
+  }
+  
+  .preview-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+  
+  .preview-title {
+    font-size: 1rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  
+  .preview-location {
+    font-size: 0.875rem;
     color: var(--text-muted);
     margin-bottom: 1rem;
   }
-
-  .skill-tags,
-  .project-tags {
+  
+  .preview-about {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  
+  .preview-skills {
+    margin-bottom: 2rem;
+  }
+  
+  .preview-skills h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+  }
+  
+  .skills-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-
-  .tag {
+  
+  .skill-tag {
     padding: 0.375rem 0.875rem;
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
     border-radius: 8px;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: var(--text-secondary);
-    transition: all 0.3s ease;
   }
-
-  .tag:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+  
+  .preview-projects h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
   }
-
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+  
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
-
-  .project-card {
+  
+  .project-mini {
+    padding: 1rem;
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 2rem;
-    transition: all 0.3s ease;
-  }
-
-  .project-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  }
-
-  .project-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-    gap: 1rem;
-  }
-
-  .project-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-
-  .project-links {
-    display: flex;
-    gap: 0.75rem;
-  }
-
-  .icon-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
     border-radius: 10px;
-    color: var(--text-secondary);
-    transition: all 0.3s ease;
   }
-
-  .icon-link:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-2px);
-  }
-
-  .project-description {
-    color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    line-height: 1.7;
-  }
-
-  .project-highlights,
-  .experience-achievements {
-    list-style: none;
-    margin-top: 1rem;
-  }
-
-  .project-highlights li,
-  .experience-achievements li {
-    padding: 0.5rem 0;
-    padding-left: 1.5rem;
-    position: relative;
-    color: var(--text-secondary);
-  }
-
-  .project-highlights li::before,
-  .experience-achievements li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: var(--accent);
-    font-weight: bold;
-  }
-
-  .experience-timeline {
-    position: relative;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  .experience-timeline::before {
-    content: '';
-    position: absolute;
-    left: 20px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(180deg, var(--accent) 0%, var(--accent-secondary) 100%);
-  }
-
-  .experience-item {
-    position: relative;
-    padding-left: 60px;
-    padding-bottom: 3rem;
-  }
-
-  .experience-marker {
-    position: absolute;
-    left: 12px;
-    top: 8px;
-    width: 18px;
-    height: 18px;
-    background: var(--accent);
-    border-radius: 50%;
-    box-shadow: 0 0 20px var(--accent-glow);
-  }
-
-  .experience-header {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    flex-wrap: wrap;
+  
+  .project-mini h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
   }
-
-  .experience-title {
-    font-size: 1.25rem;
+  
+  .project-mini p {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+  
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  
+  .project-tech span {
+    padding: 0.25rem 0.5rem;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+  }
+  
+  .preview-cta {
+    text-align: center;
+  }
+  
+  /* CTA Section */
+  .cta-section {
+    padding: 6rem 2rem;
+  }
+  
+  .cta-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .cta-content h2 {
+    font-size: 2rem;
     font-weight: 700;
     color: var(--text-primary);
+    margin-bottom: 0.75rem;
   }
-
-  .experience-company {
-    color: var(--accent);
-    font-weight: 600;
-  }
-
-  .experience-period {
+  
+  .cta-content p {
+    font-size: 1.125rem;
     color: var(--text-muted);
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
   }
-
-  .experience-description {
-    color: var(--text-secondary);
-    margin-bottom: 1rem;
-    line-height: 1.7;
-  }
-
-  .experience-achievements li {
-    padding: 0.4rem 0;
-  }
-
+  
+  /* Footer */
   .footer {
     background: var(--bg-secondary);
     border-top: 1px solid var(--border);
     padding: 3rem 2rem;
-    margin-top: 4rem;
   }
-
+  
   .footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 1rem;
+    margin-bottom: 2rem;
   }
-
-  .footer p {
-    color: var(--text-muted);
+  
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
   }
-
+  
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.25rem;
+  }
+  
   .footer-links {
     display: flex;
     gap: 2rem;
   }
-
+  
   .footer-links a {
     color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
   }
-
+  
   .footer-links a:hover {
     color: var(--accent);
   }
-
+  
+  .footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  
+  .footer-bottom p {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+  
+  /* Responsive */
   @media (max-width: 768px) {
-    .hero {
-      padding: 1rem;
+    .workflow-steps {
+      flex-direction: column;
+      gap: 1.5rem;
     }
-
-    .avatar img {
-      width: 120px;
-      height: 120px;
+    
+    .workflow-arrow {
+      transform: rotate(90deg);
     }
-
-    .section {
-      padding: 4rem 1rem;
-    }
-
-    .section-title {
-      font-size: 2rem;
-    }
-
-    .projects-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .experience-timeline::before {
-      left: 10px;
-    }
-
-    .experience-item {
-      padding-left: 40px;
-    }
-
-    .experience-marker {
-      left: 2px;
-      width: 16px;
-      height: 16px;
-    }
-
+    
     .footer-content {
       flex-direction: column;
       text-align: center;
+    }
+    
+    .footer-links {
+      gap: 1rem;
     }
   }
 </style>

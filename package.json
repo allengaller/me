@@ -2,6 +2,7 @@
   "name": "me",
   "type": "module",
   "version": "1.0.0",
+  "description": "ME - 个人档案生成器。通过友好的分步引导创建 SOUL.md 个人档案",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

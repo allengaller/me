@@ -1,0 +1,395 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProgressBar from '../../components/wizard/ProgressBar.astro';
+import WizardNav from '../../components/wizard/WizardNav.astro';
+---
+
+<Layout>
+  <main class="wizard-page">
+    <div class="wizard-container">
+      <ProgressBar currentStep={4} totalSteps={6} />
+      
+      <div class="step-header">
+        <h1>项目经历</h1>
+        <p>展示您的精彩项目作品</p>
+      </div>
+      
+      <form id="step-4-form" class="step-form">
+        <div class="projects-list" id="projects-list">
+          <!-- 动态生成项目 -->
+        </div>
+        
+        <button type="button" class="btn btn-add" id="add-project">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          添加项目
+        </button>
+        
+        <WizardNav 
+          prevUrl="/wizard/step-3" 
+          nextUrl="/wizard/step-5" 
+          nextText="下一步" 
+        />
+      </form>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { loadDraft, saveDraft } from '../../utils/storage.js';
+  
+  const projectsList = document.getElementById('projects-list');
+  const addBtn = document.getElementById('add-project');
+  
+  function createProjectItem(data = {}) {
+    const div = document.createElement('div');
+    div.className = 'project-item';
+    div.innerHTML = `
+      <div class="project-header">
+        <input type="text" class="project-title" name="title" placeholder="项目名称" value="${data.title || ''}" required>
+        <button type="button" class="btn-remove">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <textarea class="project-desc" name="description" placeholder="项目描述..." rows="3">${data.description || ''}</textarea>
+      <input type="text" class="project-tech" name="technologies" placeholder="技术栈 (用逗号分隔)" value="${data.technologies?.join(', ') || ''}">
+      <div class="project-links">
+        <input type="url" class="project-url" name="github" placeholder="GitHub URL (可选)" value="${data.github || ''}">
+        <input type="url" class="project-url" name="live" placeholder="Live URL (可选)" value="${data.live || ''}">
+      </div>
+      <div class="highlights-section">
+        <label>项目亮点</label>
+        <div class="highlights-list"></div>
+        <button type="button" class="btn-add-highlight">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          添加亮点
+        </button>
+      </div>
+    `;
+    
+    const highlightsList = div.querySelector('.highlights-list');
+    const highlights = data.highlights || [];
+    
+    function addHighlight(text = '') {
+      const hDiv = document.createElement('div');
+      hDiv.className = 'highlight-item';
+      hDiv.innerHTML = `
+        <input type="text" placeholder="例如：日活用户 10万+" value="${text}">
+        <button type="button" class="btn-remove-highlight">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      `;
+      
+      hDiv.querySelector('.btn-remove-highlight').addEventListener('click', () => {
+        hDiv.remove();
+      });
+      
+      highlightsList.appendChild(hDiv);
+    }
+    
+    highlights.forEach(h => addHighlight(h));
+    
+    div.querySelector('.btn-add-highlight').addEventListener('click', () => {
+      addHighlight();
+    });
+    
+    div.querySelector('.btn-remove').addEventListener('click', () => {
+      div.remove();
+    });
+    
+    return div;
+  }
+  
+  function saveCurrentData() {
+    const items = projectsList.querySelectorAll('.project-item');
+    const projects = [];
+    
+    items.forEach(item => {
+      const title = item.querySelector('[name="title"]').value;
+      const description = item.querySelector('[name="description"]').value;
+      const techInput = item.querySelector('[name="technologies"]').value;
+      const technologies = techInput.split(',').map(t => t.trim()).filter(t => t);
+      const github = item.querySelector('[name="github"]').value;
+      const live = item.querySelector('[name="live"]').value;
+      
+      const highlights = [];
+      item.querySelectorAll('.highlight-item input').forEach(input => {
+        if (input.value) highlights.push(input.value);
+      });
+      
+      if (title) {
+        projects.push({
+          title,
+          title_zh: title,
+          description,
+          description_zh: description,
+          technologies,
+          github,
+          live,
+          highlights,
+          highlights_zh: highlights
+        });
+      }
+    });
+    
+    const existing = loadDraft() || {};
+    existing.projects = projects;
+    saveDraft(existing);
+  }
+  
+  // 加载草稿数据
+  const draft = loadDraft();
+  if (draft?.projects?.length > 0) {
+    draft.projects.forEach(item => {
+      projectsList.appendChild(createProjectItem(item));
+    });
+  } else {
+    projectsList.appendChild(createProjectItem());
+  }
+  
+  // 添加按钮
+  addBtn.addEventListener('click', () => {
+    projectsList.appendChild(createProjectItem());
+  });
+  
+  // 表单提交
+  document.getElementById('step-4-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveCurrentData();
+    window.location.href = '/wizard/step-5';
+  });
+</script>
+
+<style>
+  .wizard-page {
+    min-height: 100vh;
+    padding: 6rem 2rem 4rem;
+  }
+  
+  .wizard-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .step-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .step-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .step-header p {
+    color: var(--text-muted);
+  }
+  
+  .step-form {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+  
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .project-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  
+  .project-header {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .project-title {
+    flex: 1;
+    padding: 0.625rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .project-desc {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+    font-family: inherit;
+    resize: vertical;
+    margin-bottom: 0.75rem;
+  }
+  
+  .project-tech {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .project-links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .project-url {
+    padding: 0.625rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+  
+  .project-title:focus,
+  .project-desc:focus,
+  .project-tech:focus,
+  .project-url:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  
+  .btn-remove {
+    padding: 0.5rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 6px;
+    color: #ef4444;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-remove:hover {
+    background: rgba(239, 68, 68, 0.2);
+  }
+  
+  .highlights-section label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+  
+  .highlights-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .highlight-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .highlight-item input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+  
+  .highlight-item input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  
+  .btn-remove-highlight {
+    padding: 0.375rem;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-remove-highlight:hover {
+    color: #ef4444;
+  }
+  
+  .btn-add-highlight {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.875rem;
+    background: var(--bg-secondary);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-add-highlight:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  
+  .btn-add {
+    width: 100%;
+    padding: 0.875rem;
+    background: var(--bg-tertiary);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .btn-add:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,205 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProgressBar from '../../components/wizard/ProgressBar.astro';
+import FormField from '../../components/wizard/FormField.astro';
+import WizardNav from '../../components/wizard/WizardNav.astro';
+import GitHubImport from '../../components/import/GitHubImport.astro';
+import FileImport from '../../components/import/FileImport.astro';
+---
+
+<Layout>
+  <main class="wizard-page">
+    <div class="wizard-container">
+      <ProgressBar currentStep={1} totalSteps={6} />
+      
+      <div class="step-header">
+        <h1>基础信息</h1>
+        <p>让我们从最基本的个人信息开始</p>
+      </div>
+      
+      <!-- 导入选项 (仅在 URL 参数包含 import 时显示) -->
+      <div id="import-panel" class="import-panel" style="display: none;">
+        <h3>📥 导入现有资料</h3>
+        <div class="import-grid">
+          <GitHubImport />
+          <FileImport />
+        </div>
+      </div>
+      
+      <form id="step-1-form" class="step-form">
+        <div class="form-section">
+          <h3>👤 个人信息</h3>
+          
+          <FormField
+            label="姓名"
+            name="name"
+            placeholder="您的姓名"
+            required
+          />
+          
+          <FormField
+            label="职位头衔"
+            name="title"
+            placeholder="例如：高级软件工程师"
+            required
+          />
+          
+          <FormField
+            label="所在地"
+            name="location"
+            placeholder="例如：北京，中国"
+            required
+          />
+          
+          <FormField
+            label="个人简介"
+            name="about"
+            type="textarea"
+            placeholder="简短介绍您自己..."
+            rows={4}
+            required
+          />
+          
+          <FormField
+            label="头像 URL"
+            name="avatar"
+            type="url"
+            placeholder="https://example.com/avatar.jpg"
+            hint="留空将使用默认头像"
+          />
+        </div>
+        
+        <WizardNav showPrev={false} nextUrl="/wizard/step-2" nextText="下一步" />
+      </form>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { loadDraft, saveDraft } from '../../utils/storage.js';
+  
+  // 检查是否需要显示导入面板
+  const urlParams = new URLSearchParams(window.location.search);
+  const importType = urlParams.get('import');
+  
+  if (importType) {
+    document.getElementById('import-panel').style.display = 'block';
+  }
+  
+  // 加载草稿数据
+  const draft = loadDraft();
+  if (draft?.profile) {
+    Object.keys(draft.profile).forEach(key => {
+      const input = document.querySelector(`[name="${key}"]`);
+      if (input && draft.profile[key]) {
+        input.value = draft.profile[key];
+      }
+    });
+  }
+  
+  // 表单提交
+  document.getElementById('step-1-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const profile = {
+      name: formData.get('name'),
+      title: formData.get('title'),
+      location: formData.get('location'),
+      about: formData.get('about'),
+      avatar: formData.get('avatar')
+    };
+    
+    // 合并到现有数据
+    const existing = loadDraft() || {};
+    existing.profile = { ...existing.profile, ...profile };
+    
+    saveDraft(existing);
+    window.location.href = '/wizard/step-2';
+  });
+  
+  // 自动保存
+  document.querySelectorAll('input, textarea').forEach(input => {
+    input.addEventListener('input', () => {
+      const formData = new FormData(document.getElementById('step-1-form'));
+      const profile = {
+        name: formData.get('name'),
+        title: formData.get('title'),
+        location: formData.get('location'),
+        about: formData.get('about'),
+        avatar: formData.get('avatar')
+      };
+      
+      const existing = loadDraft() || {};
+      existing.profile = { ...existing.profile, ...profile };
+      
+      if (typeof window !== 'undefined' && window.debounceTimer) {
+        clearTimeout(window.debounceTimer);
+      }
+      
+      window.debounceTimer = setTimeout(() => {
+        saveDraft(existing);
+      }, 1000);
+    });
+  });
+</script>
+
+<style>
+  .wizard-page {
+    min-height: 100vh;
+    padding: 6rem 2rem 4rem;
+  }
+  
+  .wizard-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .step-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .step-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  
+  .step-header p {
+    color: var(--text-muted);
+  }
+  
+  .import-panel {
+    margin-bottom: 2rem;
+  }
+  
+  .import-panel h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  
+  .import-grid {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .step-form {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+  
+  .form-section h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+</style>
