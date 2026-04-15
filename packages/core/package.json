@@ -1,0 +1,24 @@
+{
+  "name": "@me-hub/core",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Shared core library for ME Hub - types, storage, privacy, validation",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./types": "./dist/types/index.js",
+    "./storage": "./dist/storage/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
