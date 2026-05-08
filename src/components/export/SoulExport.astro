@@ -6,16 +6,16 @@
     <div class="export-icon">🦞</div>
     <div>
       <h3>SOUL.md</h3>
-      <p>标准化的个人档案 Markdown 文件</p>
+      <p>Standardized profile Markdown file</p>
     </div>
   </div>
   
   <div class="export-preview">
     <div class="preview-header">
-      <span>文件预览</span>
+      <span>File preview</span>
       <span class="file-badge">SOUL.md</span>
     </div>
-    <pre id="soul-preview" class="preview-content"><code>点击"生成预览"查看内容...</code></pre>
+    <pre id="soul-preview" class="preview-content"><code>Click "Generate preview" to see content...</code></pre>
   </div>
   
   <div class="export-actions">
@@ -24,7 +24,7 @@
         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
         <circle cx="12" cy="12" r="3"></circle>
       </svg>
-      生成预览
+      Generate preview
     </button>
     <button id="download-btn" class="btn btn-primary">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -32,7 +32,7 @@
         <polyline points="7 10 12 15 17 10"></polyline>
         <line x1="12" y1="15" x2="12" y2="3"></line>
       </svg>
-      下载 SOUL.md
+      Download SOUL.md
     </button>
   </div>
 </div>
@@ -58,7 +58,7 @@
   
   previewBtn.addEventListener('click', () => {
     if (!loadProfile()) {
-      previewEl.innerHTML = '<code class="error">暂无数据，请先完成向导填写</code>';
+      previewEl.innerHTML = '<code class="error">No data yet. Please complete the wizard first.</code>';
       return;
     }
     
@@ -67,14 +67,13 @@
     const escaped = content
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-    
+      .replace(/>/g, '&gt;');    
     previewEl.innerHTML = `<code>${escaped}</code>`;
   });
   
   downloadBtn.addEventListener('click', () => {
     if (!loadProfile()) {
-      alert('暂无数据，请先完成向导填写');
+      alert('No data yet. Please complete the wizard first.');
       return;
     }
     

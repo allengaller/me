@@ -4,143 +4,116 @@ import SoulExport from '../../components/export/SoulExport.astro';
 ---
 
 <Layout>
-  <main class="complete-page">
-    <div class="complete-container">
-      <div class="success-animation">
-        <div class="checkmark">✓</div>
+  <div class="done-page">
+    <div class="done-container">
+      <div class="done-mark">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      
-      <h1>档案创建完成!</h1>
-      <p class="subtitle">您的个人档案已准备就绪，现在可以导出使用了</p>
-      
-      <div class="stats-cards">
-        <div class="stat-card">
-          <span class="stat-value" id="profile-name">-</span>
-          <span class="stat-label">姓名</span>
+
+      <h1>Profile complete</h1>
+      <p class="done-sub">Your personal profile is ready to export.</p>
+
+      <div class="done-stats">
+        <div class="done-stat">
+          <span class="done-val" id="profile-name">-</span>
+          <span class="done-lbl">Name</span>
         </div>
-        <div class="stat-card">
-          <span class="stat-value" id="skills-count">0</span>
-          <span class="stat-label">技能</span>
+        <div class="done-stat">
+          <span class="done-val" id="skills-count">0</span>
+          <span class="done-lbl">Skills</span>
         </div>
-        <div class="stat-card">
-          <span class="stat-value" id="projects-count">0</span>
-          <span class="stat-label">项目</span>
+        <div class="done-stat">
+          <span class="done-val" id="projects-count">0</span>
+          <span class="done-lbl">Projects</span>
         </div>
-        <div class="stat-card">
-          <span class="stat-value" id="exp-count">0</span>
-          <span class="stat-label">经历</span>
+        <div class="done-stat">
+          <span class="done-val" id="exp-count">0</span>
+          <span class="done-lbl">Experience</span>
         </div>
       </div>
-      
-      <div class="exports-section">
-        <h2>📦 导出您的档案</h2>
-        <p>选择您需要的格式，一键下载</p>
-        
-        <div class="exports-grid">
+
+      <div class="done-exports">
+        <h2>Export your profile</h2>
+        <p>Choose a format and download.</p>
+
+        <div class="done-grid">
           <SoulExport />
-          
-          <div class="export-card">
-            <div class="export-header">
-              <div class="export-icon json-icon">{ }</div>
+
+          <div class="done-card">
+            <div class="done-card-head">
+              <div class="done-icon json-icon">{ }</div>
               <div>
                 <h3>JSON</h3>
-                <p>结构化数据格式，便于程序处理</p>
+                <p>Structured data for programmatic use</p>
               </div>
             </div>
             <button id="download-json" class="btn btn-secondary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              下载 profile.json
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download profile.json
             </button>
           </div>
-          
-          <div class="export-card">
-            <div class="export-header">
-              <div class="export-icon yaml-icon">YML</div>
+
+          <div class="done-card">
+            <div class="done-card-head">
+              <div class="done-icon yaml-icon">YML</div>
               <div>
                 <h3>YAML</h3>
-                <p>人类友好的数据序列化格式</p>
+                <p>Human-friendly serialization format</p>
               </div>
             </div>
             <button id="download-yaml" class="btn btn-secondary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              下载 profile.yaml
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download profile.yaml
             </button>
           </div>
         </div>
       </div>
-      
-      <div class="actions-section">
-        <a href="/preview" target="_blank" class="btn btn-preview">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-          预览主页
+
+      <div class="done-actions">
+        <a href="/preview" target="_blank" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Preview profile
         </a>
         <a href="/wizard" class="btn btn-secondary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          返回开始
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to start
         </a>
       </div>
-      
-      <div class="reset-section">
-        <button id="reset-btn" class="btn-reset">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          </svg>
-          清除数据重新开始
+
+      <div class="done-reset">
+        <button id="reset-btn" class="done-reset-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Clear data and start over
         </button>
       </div>
     </div>
-  </main>
+  </div>
 </Layout>
 
 <script>
   import { loadDraft, clearDraft } from '../../utils/storage.js';
   import { downloadJson } from '../../utils/exporters/json.js';
   import { downloadYaml } from '../../utils/exporters/yaml.js';
-  
-  // 加载并显示统计
+
   const draft = loadDraft();
-  
+
   if (draft) {
     document.getElementById('profile-name').textContent = draft.profile?.name || '-';
     document.getElementById('skills-count').textContent = draft.skills?.length || 0;
     document.getElementById('projects-count').textContent = draft.projects?.length || 0;
     document.getElementById('exp-count').textContent = draft.experience?.length || 0;
   }
-  
-  // 下载按钮
+
   document.getElementById('download-json').addEventListener('click', () => {
-    if (draft) {
-      downloadJson(draft);
-    } else {
-      alert('暂无数据');
-    }
+    if (draft) { downloadJson(draft); } else { alert('No data available'); }
   });
-  
+
   document.getElementById('download-yaml').addEventListener('click', () => {
-    if (draft) {
-      downloadYaml(draft);
-    } else {
-      alert('暂无数据');
-    }
+    if (draft) { downloadYaml(draft); } else { alert('No data available'); }
   });
-  
-  // 重置按钮
+
   document.getElementById('reset-btn').addEventListener('click', () => {
-    if (confirm('确定要清除所有数据吗？此操作不可恢复。')) {
+    if (confirm('Clear all data? This cannot be undone.')) {
       clearDraft();
       window.location.href = '/wizard';
     }
@@ -148,236 +121,194 @@ import SoulExport from '../../components/export/SoulExport.astro';
 </script>
 
 <style>
-  .complete-page {
-    min-height: 100vh;
+  .done-page {
+    min-height: calc(100vh - 56px);
     padding: 4rem 2rem;
   }
-  
-  .complete-container {
-    max-width: 900px;
+
+  .done-container {
+    max-width: 640px;
     margin: 0 auto;
     text-align: center;
   }
-  
-  .success-animation {
-    margin-bottom: 1.5rem;
-  }
-  
-  .checkmark {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+
+  .done-mark {
+    width: 48px;
+    height: 48px;
+    background: var(--accent-dim);
+    border: 1px solid var(--accent-border);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
-    color: white;
-    margin: 0 auto;
-    box-shadow: 0 8px 32px rgba(34, 197, 94, 0.4);
-    animation: scale-in 0.5s ease-out;
+    color: var(--accent);
+    margin: 0 auto 1.5rem;
   }
-  
-  @keyframes scale-in {
-    0% {
-      transform: scale(0);
-      opacity: 0;
-    }
-    50% {
-      transform: scale(1.1);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-  
+
   h1 {
-    font-size: clamp(2rem, 5vw, 2.5rem);
-    font-weight: 800;
-    background: var(--gradient-1);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text);
     margin-bottom: 0.5rem;
+    letter-spacing: 0.01em;
   }
-  
-  .subtitle {
+
+  .done-sub {
     color: var(--text-muted);
-    font-size: 1.125rem;
-    margin-bottom: 2rem;
+    font-size: 0.88rem;
+    margin-bottom: 2.5rem;
   }
-  
-  .stats-cards {
+
+  .done-stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    gap: 1px;
+    background: var(--border-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
     margin-bottom: 3rem;
   }
-  
-  .stat-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem 1rem;
+
+  .done-stat {
+    background: var(--bg);
+    padding: 1.25rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.25rem;
   }
-  
-  .stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--accent);
+
+  .done-val {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text);
   }
-  
-  .stat-label {
-    font-size: 0.875rem;
+
+  .done-lbl {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     color: var(--text-muted);
   }
-  
-  .exports-section {
+
+  .done-exports {
     margin-bottom: 3rem;
   }
-  
-  .exports-section h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
+
+  .done-exports h2 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text);
+    margin-bottom: 0.4rem;
   }
-  
-  .exports-section > p {
+
+  .done-exports > p {
     color: var(--text-muted);
+    font-size: 0.82rem;
     margin-bottom: 1.5rem;
   }
-  
-  .exports-grid {
+
+  .done-grid {
     display: grid;
-    gap: 1rem;
+    gap: 1px;
+    background: var(--border-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
   }
-  
-  .export-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
+
+  .done-card {
+    background: var(--bg);
+    padding: 1.25rem 1.5rem;
     text-align: left;
-  }
-  
-  .export-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 1rem;
   }
-  
-  .export-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
+
+  .done-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .done-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 0.875rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 0.7rem;
   }
-  
+
   .json-icon {
-    background: rgba(59, 130, 246, 0.1);
+    background: var(--accent-dim);
     color: var(--accent);
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    border: 1px solid var(--accent-border);
   }
-  
+
   .yaml-icon {
-    background: rgba(139, 92, 246, 0.1);
-    color: var(--accent-secondary);
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    background: var(--accent-dim);
+    color: var(--accent-hover);
+    border: 1px solid var(--accent-border);
   }
-  
-  .export-header h3 {
-    font-size: 1.125rem;
+
+  .done-card-head h3 {
+    font-size: 0.88rem;
     font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
+    color: var(--text);
   }
-  
-  .export-header p {
-    font-size: 0.875rem;
+
+  .done-card-head p {
+    font-size: 0.72rem;
     color: var(--text-muted);
-    margin: 0.25rem 0 0 0;
+    margin-top: 0.1rem;
   }
-  
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.9375rem;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-  }
-  
-  .btn-secondary {
-    background: var(--bg-tertiary);
-    color: var(--text-secondary);
-    border: 1px solid var(--border);
-  }
-  
-  .btn-secondary:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-  
-  .actions-section {
+
+  .done-actions {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.75rem;
     margin-bottom: 2rem;
     flex-wrap: wrap;
   }
-  
-  .btn-preview {
-    background: var(--accent);
-    color: white;
-    box-shadow: 0 4px 16px var(--accent-glow);
-  }
-  
-  .btn-preview:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px var(--accent-glow);
-  }
-  
-  .reset-section {
+
+  .done-reset {
     padding-top: 2rem;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border-subtle);
   }
-  
-  .btn-reset {
+
+  .done-reset-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1rem;
+    gap: 0.4rem;
+    padding: 0.5rem 0.8rem;
     background: transparent;
     border: none;
     color: var(--text-muted);
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    font-family: var(--font-body);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: color var(--transition);
   }
-  
-  .btn-reset:hover {
-    color: #ef4444;
+
+  .done-reset-btn:hover {
+    color: var(--red);
   }
-  
+
   @media (max-width: 768px) {
-    .stats-cards {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    .done-stats { grid-template-columns: repeat(2, 1fr); }
+    .done-card { flex-direction: column; align-items: flex-start; }
   }
 </style>

@@ -10,8 +10,8 @@ import WizardNav from '../../components/wizard/WizardNav.astro';
       <ProgressBar currentStep={2} totalSteps={6} />
       
       <div class="step-header">
-        <h1>社交链接</h1>
-        <p>添加您的社交媒体和专业平台链接</p>
+        <h1>Social Links</h1>
+        <p>Add your social media and professional platform links.</p>
       </div>
       
       <form id="step-2-form" class="step-form">
@@ -24,15 +24,15 @@ import WizardNav from '../../components/wizard/WizardNav.astro';
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
-          添加社交链接
+          Add social link
         </button>
-        
-        <WizardNav 
-          prevUrl="/wizard/step-1" 
-          nextUrl="/wizard/step-3" 
-          nextText="下一步" 
-        />
+        <button type="submit" style="display:none" id="submit-trigger"></button>
       </form>
+      <WizardNav 
+        prevUrl="/wizard/step-1" 
+        nextUrl="/wizard/step-3" 
+        nextText="Next" 
+      />
     </div>
   </main>
 </Layout>
@@ -60,7 +60,7 @@ import WizardNav from '../../components/wizard/WizardNav.astro';
       <div class="social-inputs">
         <select class="platform-select" name="platform">
           ${defaultPlatforms.map(p => `<option value="${p}" ${data.platform === p ? 'selected' : ''}>${p}</option>`).join('')}
-          <option value="custom" ${!defaultPlatforms.includes(data.platform) && data.platform ? 'selected' : ''}>自定义</option>
+          <option value="custom" ${!defaultPlatforms.includes(data.platform) && data.platform ? 'selected' : ''}>Custom</option>
         </select>
         <input type="url" name="url" placeholder="https://..." value="${data.url || ''}" required>
         <button type="button" class="btn-remove">
@@ -122,6 +122,11 @@ import WizardNav from '../../components/wizard/WizardNav.astro';
     socialList.appendChild(createSocialItem());
   });
   
+  // WizardNav next button
+  document.querySelector('.wnav .btn-primary')?.addEventListener('click', () => {
+    document.getElementById('step-2-form').requestSubmit();
+  });
+
   // 表单提交
   document.getElementById('step-2-form').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -132,120 +137,123 @@ import WizardNav from '../../components/wizard/WizardNav.astro';
 
 <style>
   .wizard-page {
-    min-height: 100vh;
-    padding: 6rem 2rem 4rem;
+    min-height: calc(100vh - 56px);
+    padding: 3rem 2rem 4rem;
   }
-  
+
   .wizard-container {
     max-width: 700px;
     margin: 0 auto;
   }
-  
+
   .step-header {
     text-align: center;
     margin-bottom: 2rem;
   }
-  
+
   .step-header h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text);
     margin-bottom: 0.5rem;
   }
-  
+
   .step-header p {
     color: var(--text-muted);
+    font-size: 0.85rem;
   }
-  
+
   .step-form {
-    background: var(--bg-secondary);
+    background: var(--bg-raised);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
     padding: 2rem;
   }
-  
+
   .social-list {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     margin-bottom: 1rem;
   }
-  
+
   .social-item {
-    background: var(--bg-primary);
+    background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--radius);
     padding: 1rem;
   }
-  
+
   .social-inputs {
     display: flex;
     gap: 0.75rem;
     align-items: center;
   }
-  
+
   .platform-select {
     width: 120px;
     padding: 0.625rem;
-    background: var(--bg-secondary);
+    background: var(--bg-raised);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-primary);
+    border-radius: var(--radius);
+    color: var(--text);
     font-size: 0.875rem;
   }
-  
+
   .social-inputs input[type="url"] {
     flex: 1;
     padding: 0.625rem 1rem;
-    background: var(--bg-secondary);
+    background: var(--bg-raised);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-primary);
+    border-radius: var(--radius);
+    color: var(--text);
     font-size: 0.875rem;
   }
-  
+
   .platform-select:focus,
   .social-inputs input:focus {
     outline: none;
     border-color: var(--accent);
   }
-  
+
   .btn-remove {
-    padding: 0.5rem;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: 6px;
-    color: #ef4444;
+    background: transparent;
+    border: 1px solid rgba(184, 76, 76, 0.15);
+    color: var(--red);
+    padding: 0.35rem;
+    border-radius: 3px;
     cursor: pointer;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  
+
   .btn-remove:hover {
-    background: rgba(239, 68, 68, 0.2);
+    background: rgba(200, 100, 100, 0.1);
   }
-  
+
   .btn-add {
-    width: 100%;
-    padding: 0.875rem;
-    background: var(--bg-tertiary);
+    background: transparent;
     border: 1px dashed var(--border);
-    border-radius: 10px;
     color: var(--text-secondary);
     font-weight: 500;
+    border-radius: var(--radius);
+    padding: 0.7rem;
+    font-size: 0.82rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    margin-bottom: 2rem;
+    margin: 0 0 2rem;
+    transition: color var(--transition), border-color var(--transition);
   }
-  
+
   .btn-add:hover {
-    border-color: var(--accent);
+    border-color: var(--accent-border);
     color: var(--accent);
   }
 </style>

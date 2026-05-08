@@ -35,32 +35,18 @@
   ],
   "skills": [
     {
-      "name": "Backend Development",
-      "name_zh": "后端开发",
-      "level": "Expert",
-      "level_zh": "专家",
-      "technologies": ["Go", "Node.js", "Python", "PostgreSQL", "Redis", "Kubernetes"]
-    },
-    {
-      "name": "Frontend Development",
-      "name_zh": "前端开发",
-      "level": "Advanced",
-      "level_zh": "高级",
-      "technologies": ["React", "TypeScript", "Next.js", "Tailwind CSS", "GraphQL"]
-    },
-    {
-      "name": "Cloud & DevOps",
-      "name_zh": "云计算与运维",
-      "level": "Advanced",
-      "level_zh": "高级",
-      "technologies": ["AWS", "Docker", "Terraform", "CI/CD", "Monitoring", "Security"]
-    },
-    {
-      "name": "AI & Machine Learning",
-      "name_zh": "人工智能与机器学习",
-      "level": "Intermediate",
-      "level_zh": "中级",
-      "technologies": ["TensorFlow", "PyTorch", "LangChain", "OpenAI API", "Vector DBs"]
+      "name": "k8s",
+      "name_zh": "k8s",
+      "level": "Beginner",
+      "level_zh": "入门",
+      "technologies": [
+        "terway",
+        "pvc",
+        "node",
+        "pod",
+        "cluster",
+        "cert"
+      ]
     }
   ],
   "projects": [
@@ -69,7 +55,13 @@
       "title_zh": "AI 驱动的代码助手",
       "description": "Built an intelligent coding assistant using large language models to help developers write better code, generate documentation, and review pull requests automatically.",
       "description_zh": "使用大语言模型构建的智能代码助手，帮助开发者编写更好的代码、生成文档并自动审查代码合并请求。",
-      "technologies": ["Python", "LangChain", "FastAPI", "Redis", "PostgreSQL"],
+      "technologies": [
+        "Python",
+        "LangChain",
+        "FastAPI",
+        "Redis",
+        "PostgreSQL"
+      ],
       "github": "https://github.com/yourusername/ai-assistant",
       "live": "https://ai-assistant.dev",
       "highlights": [
@@ -88,7 +80,12 @@
       "title_zh": "分布式任务队列",
       "description": "Designed and implemented a high-performance distributed task queue system for processing millions of background jobs with guaranteed delivery and fault tolerance.",
       "description_zh": "设计并实现了高性能的分布式任务队列系统，用于处理数百万后台任务，保证投递和容错能力。",
-      "technologies": ["Go", "gRPC", "etcd", "Prometheus"],
+      "technologies": [
+        "Go",
+        "gRPC",
+        "etcd",
+        "Prometheus"
+      ],
       "github": "https://github.com/yourusername/distributed-queue",
       "highlights": [
         "Handles 10M+ tasks per day",
@@ -106,7 +103,12 @@
       "title_zh": "实时分析平台",
       "description": "Developed a real-time analytics platform that processes and visualizes streaming data from multiple sources, enabling instant business insights.",
       "description_zh": "开发了实时分析平台，处理和可视化来自多个源的流式数据，实现即时商业洞察。",
-      "technologies": ["Kafka", "ClickHouse", "React", "WebSockets"],
+      "technologies": [
+        "Kafka",
+        "ClickHouse",
+        "React",
+        "WebSockets"
+      ],
       "github": "https://github.com/yourusername/analytics-platform",
       "live": "https://analytics.example.com",
       "highlights": [

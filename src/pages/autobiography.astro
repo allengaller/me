@@ -1,0 +1,573 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <div class="qa-page" id="app">
+    <div class="qa-page-header">
+      <p class="qa-eyebrow">Autobiography</p>
+      <h1 class="qa-title">Tell your <em>story.</em></h1>
+      <p class="qa-desc">15 questions across 7 chapters. Watch your life story take shape in real time.</p>
+    </div>
+
+    <div class="qa-split">
+      <aside class="preview-col" id="previewCol">
+        <div class="preview-top">
+          <span class="preview-label">Preview</span>
+          <div class="preview-actions">
+            <button class="btn-icon" id="resetBtn" title="Start over">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            </button>
+            <button class="btn-icon" id="exportBtn" title="Export">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="preview-scroll" id="previewContent">
+          <div class="preview-empty">Your autobiography will appear here as you answer questions...</div>
+        </div>
+      </aside>
+
+      <main class="qa-col">
+        <div class="qa-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <span class="progress-text" id="progressText">1 / 15</span>
+        </div>
+
+        <div class="qa-body" id="qaBody">
+          <div class="qa-chapter" id="qaChapter"></div>
+          <h2 class="qa-question" id="qaQuestion"></h2>
+          <p class="qa-hint" id="qaHint"></p>
+          <textarea class="qa-input" id="qaInput" rows="5" placeholder=""></textarea>
+          <p class="qa-shortcut" id="qaShortcut"></p>
+        </div>
+
+        <div class="qa-nav">
+          <button class="btn btn-secondary" id="prevBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Previous
+          </button>
+          <button class="btn btn-primary" id="nextBtn">
+            Next
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal" id="exportModal" style="display:none;">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
+      <div class="modal-body">
+        <div class="modal-header">
+          <h3>Export Autobiography</h3>
+          <button class="btn-icon" id="modalClose">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="modal-warn" id="modalWarn" style="display:none;">
+          You have not answered any questions yet. The export will be mostly empty.
+        </div>
+        <textarea class="modal-area" id="exportArea" readonly rows="18"></textarea>
+        <div class="modal-actions">
+          <button class="btn btn-primary" id="copyBtn">Copy to clipboard</button>
+          <button class="btn btn-secondary" id="downloadBtn">Download .md</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="resetModal" style="display:none;">
+      <div class="modal-backdrop" id="resetBackdrop"></div>
+      <div class="modal-body" style="max-width:440px;">
+        <div class="modal-header">
+          <h3>Start over?</h3>
+          <button class="btn-icon" id="resetClose">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="modal-prompt">
+          This will clear all your answers and progress. This cannot be undone.
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="resetCancel">Cancel</button>
+          <button class="btn btn-danger" id="resetConfirm">Clear everything</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const CHAPTERS = [
+    { id: 'origin', title: 'Origins', titleZh: '\u8D77\u6E90' },
+    { id: 'growth', title: 'Growing Up', titleZh: '\u6210\u957F' },
+    { id: 'education', title: 'Education', titleZh: '\u6C42\u5B66' },
+    { id: 'career', title: 'Career', titleZh: '\u804C\u4E1A' },
+    { id: 'philosophy', title: 'Beliefs', titleZh: '\u4FE1\u5FF5' },
+    { id: 'personal', title: 'Personal', titleZh: '\u4E2A\u4EBA' },
+    { id: 'future', title: 'Looking Ahead', titleZh: '\u5C55\u671B' },
+  ];
+
+  const QUESTIONS = [
+    { chapter: 'origin', question: 'What is your name, and when and where were you born?', hint: 'Full name, birth year, city/country.', placeholder: 'e.g. My name is Zhang Wei. I was born in 1990 in Chengdu, Sichuan...' },
+    { chapter: 'origin', question: 'Where did you grow up? What was that place like for you?', hint: 'Describe the environment, the feeling of the place.', placeholder: 'e.g. I grew up in a medium-sized city surrounded by mountains...' },
+    { chapter: 'origin', question: 'What was your family like? How did they shape who you are?', hint: 'Parents, siblings, family values, traditions.', placeholder: 'e.g. My father was an engineer and my mother taught literature at a local school...' },
+    { chapter: 'growth', question: 'What were you passionate about as a child or teenager?', hint: 'Hobbies, interests, early signs of curiosity.', placeholder: 'e.g. I was obsessed with taking apart electronics. I once dismantled our family radio...' },
+    { chapter: 'growth', question: 'Was there a moment that changed the direction of your life?', hint: 'A person, event, or realization that shifted your path.', placeholder: 'e.g. When I was 14, a friend showed me a program he wrote in BASIC...' },
+    { chapter: 'education', question: 'Tell me about your education. What did you study and where?', hint: 'Schools, majors, key learnings.', placeholder: 'e.g. I studied Computer Science at Peking University...' },
+    { chapter: 'education', question: 'Did any teacher or mentor leave a lasting impression on you?', hint: 'Someone who guided, challenged, or inspired you.', placeholder: 'e.g. Professor Liu changed how I think about problem-solving...' },
+    { chapter: 'career', question: 'How did you get into your current field?', hint: 'First job, early projects, what drew you in.', placeholder: 'e.g. After graduation I joined a small startup as their first backend engineer...' },
+    { chapter: 'career', question: 'What is your proudest professional achievement so far?', hint: 'A project, a role, a moment of impact.', placeholder: 'e.g. Leading the redesign of our core payment system that now handles...' },
+    { chapter: 'career', question: 'What was the hardest challenge you faced at work? How did you handle it?', hint: 'A failure, a crisis, or a difficult decision.', placeholder: 'e.g. The hardest period was when our team had to ship a critical migration...' },
+    { chapter: 'philosophy', question: 'What principles or values guide your decisions?', hint: 'Core beliefs, work philosophy, life approach.', placeholder: 'e.g. I believe in building things that outlast me...' },
+    { chapter: 'philosophy', question: 'What have you learned from failure?', hint: 'A specific lesson that stuck with you.', placeholder: 'e.g. Early in my career I shipped a feature without proper testing...' },
+    { chapter: 'personal', question: 'What do you enjoy outside of work?', hint: 'Hobbies, interests, passions, people.', placeholder: 'e.g. I am an avid trail runner. On weekends I explore mountain paths...' },
+    { chapter: 'future', question: 'What do you want to achieve in the next five years?', hint: 'Goals, dreams, direction.', placeholder: 'e.g. I want to build a product that reaches a million users...' },
+    { chapter: 'future', question: 'If you could give one piece of advice to your younger self, what would it be?', hint: 'Wisdom you wish you had earlier.', placeholder: "e.g. Don't be afraid to start over. The detours are where you learn the most..." },
+  ];
+
+  const STORAGE_KEY = 'me_autobiography';
+  let current = 0;
+  let answers = {};
+
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const modKey = isMac ? '\u2318' : 'Ctrl';
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) { const d = JSON.parse(raw); answers = d.answers || {}; current = d.current || 0; }
+    } catch {}
+  }
+  function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers, current })); }
+
+  const $ = id => document.getElementById(id);
+  const $progressFill = $('progressFill'), $progressText = $('progressText');
+  const $qaChapter = $('qaChapter'), $qaQuestion = $('qaQuestion'), $qaHint = $('qaHint'), $qaInput = $('qaInput');
+  const $qaShortcut = $('qaShortcut');
+  const $prevBtn = $('prevBtn'), $nextBtn = $('nextBtn');
+  const $previewContent = $('previewContent');
+  const $exportModal = $('exportModal'), $modalBackdrop = $('modalBackdrop'), $modalClose = $('modalClose');
+  const $exportArea = $('exportArea'), $copyBtn = $('copyBtn'), $downloadBtn = $('downloadBtn');
+  const $modalWarn = $('modalWarn');
+  const $resetModal = $('resetModal'), $resetBackdrop = $('resetBackdrop'), $resetClose = $('resetClose');
+  const $resetCancel = $('resetCancel'), $resetConfirm = $('resetConfirm');
+
+  function getChapter(id) { return CHAPTERS.find(c => c.id === id); }
+
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>'); }
+
+  function renderQuestion() {
+    const q = QUESTIONS[current];
+    const ch = getChapter(q.chapter);
+    $qaChapter.textContent = ch.titleZh ? `${ch.title} / ${ch.titleZh}` : ch.title;
+    $qaQuestion.textContent = q.question;
+    $qaHint.textContent = q.hint || '';
+    $qaInput.placeholder = q.placeholder || '';
+    $qaInput.value = answers[current] || '';
+    $qaShortcut.textContent = `${modKey} + Enter to proceed`;
+
+    $progressFill.style.width = `${((current + 1) / QUESTIONS.length) * 100}%`;
+    $progressText.textContent = `${current + 1} / ${QUESTIONS.length}`;
+
+    $prevBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
+    $nextBtn.innerHTML = current === QUESTIONS.length - 1
+      ? 'Finish <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'
+      : 'Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+
+    renderPreview();
+    $qaInput.focus();
+  }
+
+  function renderPreview() {
+    const parts = [];
+    let lastCh = '';
+    for (let i = 0; i < QUESTIONS.length; i++) {
+      const a = answers[i];
+      if (!a || !a.trim()) continue;
+      const q = QUESTIONS[i];
+      const ch = getChapter(q.chapter);
+      if (q.chapter !== lastCh) { parts.push(`<h4 class="pv-chapter">${ch.title}</h4>`); lastCh = q.chapter; }
+      parts.push(`<p class="pv-paragraph">${esc(a.trim())}</p>`);
+    }
+    $previewContent.innerHTML = parts.length === 0
+      ? '<div class="preview-empty">Your autobiography will appear here as you answer questions...</div>'
+      : parts.join('');
+    $previewContent.scrollTop = $previewContent.scrollHeight;
+  }
+
+  function saveAnswer() { answers[current] = $qaInput.value; saveState(); renderPreview(); }
+
+  let debounce;
+  $qaInput.addEventListener('input', () => { clearTimeout(debounce); debounce = setTimeout(saveAnswer, 400); });
+
+  $prevBtn.addEventListener('click', () => { if (current > 0) { saveAnswer(); current--; renderQuestion(); } });
+  $nextBtn.addEventListener('click', () => {
+    saveAnswer();
+    if (current < QUESTIONS.length - 1) { current++; renderQuestion(); } else { openExport(); }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.target === $qaInput && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); $nextBtn.click(); }
+  });
+
+  function generateMarkdown() {
+    const lines = ['# My Autobiography', ''];
+    let lastCh = '';
+    let count = 0;
+    for (let i = 0; i < QUESTIONS.length; i++) {
+      const a = answers[i];
+      if (!a || !a.trim()) continue;
+      count++;
+      const q = QUESTIONS[i];
+      const ch = getChapter(q.chapter);
+      if (q.chapter !== lastCh) { lines.push('', `## ${ch.title}`, ''); lastCh = q.chapter; }
+      lines.push(a.trim(), '');
+    }
+    return { md: lines.join('\n'), count };
+  }
+
+  function openExport() {
+    const { md, count } = generateMarkdown();
+    $exportArea.value = md;
+    $modalWarn.style.display = count === 0 ? 'block' : 'none';
+    $exportModal.style.display = 'flex';
+  }
+
+  $('exportBtn').addEventListener('click', openExport);
+  $modalBackdrop.addEventListener('click', () => { $exportModal.style.display = 'none'; });
+  $modalClose.addEventListener('click', () => { $exportModal.style.display = 'none'; });
+
+  $copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText($exportArea.value).then(() => {
+      $copyBtn.textContent = 'Copied!'; setTimeout(() => { $copyBtn.textContent = 'Copy to clipboard'; }, 2000);
+    });
+  });
+  $downloadBtn.addEventListener('click', () => {
+    const b = new Blob([$exportArea.value], { type: 'text/markdown' });
+    const u = URL.createObjectURL(b);
+    const a = document.createElement('a'); a.href = u; a.download = 'autobiography.md'; a.click();
+    URL.revokeObjectURL(u);
+  });
+
+  $('resetBtn').addEventListener('click', () => { $resetModal.style.display = 'flex'; });
+  $resetBackdrop.addEventListener('click', () => { $resetModal.style.display = 'none'; });
+  $resetClose.addEventListener('click', () => { $resetModal.style.display = 'none'; });
+  $resetCancel.addEventListener('click', () => { $resetModal.style.display = 'none'; });
+  $resetConfirm.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    current = 0;
+    answers = {};
+    $resetModal.style.display = 'none';
+    renderQuestion();
+  });
+
+  loadState();
+  if (current >= QUESTIONS.length) current = 0;
+  renderQuestion();
+</script>
+
+<style>
+  .qa-page { min-height: calc(100vh - 56px); }
+
+  .qa-page-header {
+    text-align: center;
+    padding: 2.5rem 2rem 0;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  .qa-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .qa-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+  .qa-title em { color: var(--accent); }
+
+  .qa-desc {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .qa-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 56px - 160px);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .preview-col {
+    background: var(--bg-raised);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .preview-top {
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .preview-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .preview-actions { display: flex; gap: 0.5rem; }
+
+  .btn-icon {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: color var(--transition);
+    display: flex;
+  }
+  .btn-icon:hover { color: var(--text); }
+
+  .preview-scroll {
+    flex: 1;
+    padding: 2rem 1.5rem;
+    overflow-y: auto;
+  }
+
+  .preview-empty {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .pv-chapter {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .pv-chapter:first-child { margin-top: 0; }
+
+  .pv-paragraph {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 0.75rem;
+  }
+
+  .qa-col {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 3rem;
+  }
+
+  .qa-progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 1px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-text {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .qa-body { flex: 1; }
+
+  .qa-chapter {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .qa-question {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+  }
+
+  .qa-hint {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .qa-input {
+    width: 100%;
+    min-height: 140px;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    resize: vertical;
+    padding: 0.9rem 1rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font-body);
+    transition: border-color var(--transition);
+    outline: none;
+  }
+  .qa-input:focus { border-color: var(--accent-border); }
+  .qa-input::placeholder { color: var(--text-muted); font-style: italic; }
+
+  .qa-shortcut {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    opacity: 0.7;
+  }
+
+  .qa-nav {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 2rem;
+    margin-top: auto;
+  }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .modal-body {
+    position: relative;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 640px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-header h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .modal-warn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--accent);
+    background: var(--accent-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .modal-area {
+    flex: 1;
+    padding: 1.5rem;
+    background: var(--bg);
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.7;
+    resize: none;
+    outline: none;
+  }
+
+  .modal-prompt {
+    padding: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .modal-actions {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .btn-danger {
+    background: var(--red);
+    color: #fff;
+  }
+  .btn-danger:hover { opacity: 0.9; color: #fff; }
+
+  @media (max-width: 768px) {
+    .qa-split {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+    }
+    .preview-col {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      max-height: 35vh;
+    }
+    .qa-col { padding: 1.5rem; }
+    .qa-question { font-size: 1.25rem; }
+  }
+</style>

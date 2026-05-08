@@ -53,7 +53,7 @@ ${profile.about || 'No bio provided.'}
     profile.skills.forEach(skill => {
       md += `### ${skill.name}\n`;
       md += `- **Level**: ${skill.level}\n`;
-      md += `- **Technologies**: ${skill.technologies?.join(', ') || '-'}\n\n`;
+      md += `- **Technologies**: ${skill.technologies?.map(t => typeof t === 'object' ? t.name : t).join(', ') || '-'}\n\n`;
     });
   } else {
     md += '_No skills provided._\n';

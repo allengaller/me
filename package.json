@@ -11,7 +11,8 @@
     "astro": "astro",
     "update:profile": "node scripts/update-profile.js",
     "add:project": "node scripts/add-project.js",
-    "validate": "node scripts/validate.js"
+    "validate": "node scripts/validate.js",
+    "skills": "node scripts/skills.js"
   },
   "dependencies": {
     "astro": "^4.16.17"

@@ -11,12 +11,12 @@ interface Props {
   hint?: string;
 }
 
-const { 
-  label, 
-  name, 
-  type = 'text', 
-  placeholder = '', 
-  value = '', 
+const {
+  label,
+  name,
+  type = 'text',
+  placeholder = '',
+  value = '',
   required = false,
   options = [],
   rows = 4,
@@ -24,12 +24,12 @@ const {
 } = Astro.props;
 ---
 
-<div class="form-field">
+<div class="ff">
   <label for={name}>
     {label}
-    {required && <span class="required">*</span>}
+    {required && <span class="ff-req">*</span>}
   </label>
-  
+
   {type === 'textarea' ? (
     <textarea
       id={name}
@@ -40,7 +40,7 @@ const {
     >{value}</textarea>
   ) : type === 'select' ? (
     <select id={name} name={name} required={required}>
-      <option value="">请选择...</option>
+      <option value="">Select...</option>
       {options.map(opt => (
         <option value={opt} selected={value === opt}>{opt}</option>
       ))}
@@ -55,78 +55,33 @@ const {
       required={required}
     />
   )}
-  
-  {hint && <span class="hint">{hint}</span>}
+
+  {hint && <span class="ff-hint">{hint}</span>}
 </div>
 
 <style>
-  .form-field {
-    margin-bottom: 1.5rem;
+  .ff {
+    margin-bottom: 1.25rem;
   }
-  
-  label {
+
+  .ff label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.35rem;
     font-weight: 500;
-    color: var(--text-primary);
-    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
   }
-  
-  .required {
-    color: #ef4444;
-    margin-left: 0.25rem;
+
+  .ff-req {
+    color: var(--red);
+    margin-left: 0.15rem;
   }
-  
-  input,
-  textarea,
-  select {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    background: var(--bg-primary);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-family: inherit;
-    transition: all 0.3s ease;
-  }
-  
-  input:focus,
-  textarea:focus,
-  select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-  }
-  
-  input::placeholder,
-  textarea::placeholder {
-    color: var(--text-muted);
-  }
-  
-  textarea {
-    resize: vertical;
-    min-height: 100px;
-  }
-  
-  select {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    padding-right: 2.5rem;
-  }
-  
-  select option {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-  }
-  
-  .hint {
+
+  .ff-hint {
     display: block;
-    margin-top: 0.375rem;
-    font-size: 0.8125rem;
+    margin-top: 0.25rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
   }
 </style>

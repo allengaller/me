@@ -1,0 +1,705 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <div class="qa-page" id="app">
+    <div class="qa-page-header">
+      <p class="qa-eyebrow">Self-Distillation</p>
+      <h1 class="qa-title">Distill how <em>you</em> think.</h1>
+      <p class="qa-desc">12 questions about your thinking. Walk away with a SKILL.md -- your cognitive operating system, ready for Claude Code.</p>
+    </div>
+
+    <div class="qa-split">
+      <aside class="preview-col" id="previewCol">
+        <div class="preview-top">
+          <span class="preview-label">SKILL.md</span>
+          <div class="preview-actions">
+            <button class="btn-icon" id="resetBtn" title="Start over">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            </button>
+            <button class="btn-icon" id="exportBtn" title="Export">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="preview-scroll" id="previewContent">
+          <div class="preview-empty">Your SKILL.md will take shape here as you answer...</div>
+        </div>
+      </aside>
+
+      <main class="qa-col">
+        <div class="qa-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <span class="progress-text" id="progressText">1 / 12</span>
+        </div>
+
+        <div class="qa-body" id="qaBody">
+          <div class="qa-chapter" id="qaChapter"></div>
+          <h2 class="qa-question" id="qaQuestion"></h2>
+          <p class="qa-hint" id="qaHint"></p>
+          <textarea class="qa-input" id="qaInput" rows="5" placeholder=""></textarea>
+          <p class="qa-shortcut" id="qaShortcut"></p>
+        </div>
+
+        <div class="qa-nav">
+          <button class="btn btn-secondary" id="prevBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Previous
+          </button>
+          <button class="btn btn-primary" id="nextBtn">
+            Next
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal" id="exportModal" style="display:none;">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
+      <div class="modal-body">
+        <div class="modal-header">
+          <h3>Export SKILL.md</h3>
+          <button class="btn-icon" id="modalClose">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="modal-hint">
+          Save as <code>.claude/skills/me-perspective/SKILL.md</code> to use with Claude Code.
+          <a href="https://github.com/alchaincyf/nuwa-skill" target="_blank" rel="noopener">Learn about Nuwa skills</a>
+        </div>
+        <div class="modal-warn" id="modalWarn" style="display:none;">
+          You have not answered any questions yet. The export will be mostly empty.
+        </div>
+        <textarea class="modal-area" id="exportArea" readonly rows="20"></textarea>
+        <div class="modal-actions">
+          <button class="btn btn-primary" id="copyBtn">Copy to clipboard</button>
+          <button class="btn btn-secondary" id="downloadBtn">Download SKILL.md</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="resetModal" style="display:none;">
+      <div class="modal-backdrop" id="resetBackdrop"></div>
+      <div class="modal-body" style="max-width:440px;">
+        <div class="modal-header">
+          <h3>Start over?</h3>
+          <button class="btn-icon" id="resetClose">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="modal-prompt">
+          This will clear all your answers and progress. This cannot be undone.
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="resetCancel">Cancel</button>
+          <button class="btn btn-danger" id="resetConfirm">Clear everything</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const CHAPTERS = [
+    { id: 'identity', title: 'Identity' },
+    { id: 'models', title: 'Mental Models' },
+    { id: 'decisions', title: 'Decisions' },
+    { id: 'expression', title: 'Expression DNA' },
+    { id: 'anti', title: 'Anti-patterns' },
+    { id: 'boundaries', title: 'Boundaries' },
+  ];
+
+  const QUESTIONS = [
+    { chapter: 'identity', question: 'Introduce yourself -- who are you, what do you do, what drives you?', hint: 'This becomes your identity card.', placeholder: 'e.g. I am a backend engineer who believes code should be boring and infrastructure should be invisible...' },
+    { chapter: 'models', question: "What thinking framework do you keep coming back to? When you face a new problem, what's your first instinct?", hint: 'Your go-to mental model.', placeholder: 'e.g. I always start from first principles. I strip away assumptions and rebuild from the ground up...' },
+    { chapter: 'models', question: "What's a belief that shows up everywhere in your life, not just work?", hint: 'A recurring pattern across domains.', placeholder: 'e.g. I believe simplicity is the ultimate sophistication. I apply this to code, writing, even how I pack for trips...' },
+    { chapter: 'models', question: 'What do most people consider obvious that you disagree with?', hint: 'Your contrarian edge.', placeholder: 'e.g. Most people think more tools = more productivity. I think the opposite -- fewer tools force clearer thinking...' },
+    { chapter: 'decisions', question: "When you're torn between two options, how do you decide?", hint: 'Your decision heuristic.', placeholder: "e.g. I ask myself: which option would I regret NOT taking? That usually surfaces the real priority..." },
+    { chapter: 'decisions', question: "Describe a quick decision that turned out well. What was your gut telling you?", hint: 'A decision pattern that works for you.', placeholder: 'e.g. I once chose a smaller team over a bigger budget. My gut said people matter more than resources...' },
+    { chapter: 'decisions', question: "What's a decision rule you always follow, even when it's inconvenient?", hint: 'Your non-negotiable principle.', placeholder: "e.g. Never commit to something on the same day it's proposed. Sleep on it, then decide..." },
+    { chapter: 'expression', question: "How would your closest friends describe the way you talk? What phrases do you use a lot?", hint: 'Your expression DNA -- tone, rhythm, patterns.', placeholder: 'e.g. I tend to be direct and use analogies. I say "let me push back on that" a lot...' },
+    { chapter: 'anti', question: "What's something you see others do that you would absolutely never do?", hint: 'Your anti-patterns -- behaviors you reject.', placeholder: 'e.g. I would never optimize for short-term metrics at the cost of long-term trust...' },
+    { chapter: 'anti', question: 'What did you used to value but no longer do? What changed?', hint: 'A value you abandoned -- reveals evolution.', placeholder: "e.g. I used to think being busy was a sign of importance. Now I think it's a sign of bad priorities..." },
+    { chapter: 'boundaries', question: 'What are you genuinely not good at, even though people might expect you to be?', hint: 'Honest self-assessment.', placeholder: 'e.g. I am terrible at small talk and networking events, despite being a people person in small groups...' },
+    { chapter: 'boundaries', question: 'If you could give your younger self one piece of advice about thinking, what would it be?', hint: 'Your distilled wisdom.', placeholder: "e.g. Don't wait for certainty. You learn more from doing the wrong thing confidently than from analyzing forever..." },
+  ];
+
+  const STORAGE_KEY = 'me_distill';
+  let current = 0;
+  let answers = {};
+
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const modKey = isMac ? '\u2318' : 'Ctrl';
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) { const d = JSON.parse(raw); answers = d.answers || {}; current = d.current || 0; }
+    } catch {}
+  }
+  function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers, current })); }
+
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>'); }
+
+  const $ = id => document.getElementById(id);
+  const $progressFill = $('progressFill'), $progressText = $('progressText');
+  const $qaChapter = $('qaChapter'), $qaQuestion = $('qaQuestion'), $qaHint = $('qaHint'), $qaInput = $('qaInput');
+  const $qaShortcut = $('qaShortcut');
+  const $prevBtn = $('prevBtn'), $nextBtn = $('nextBtn');
+  const $previewContent = $('previewContent');
+  const $exportModal = $('exportModal'), $modalBackdrop = $('modalBackdrop'), $modalClose = $('modalClose');
+  const $exportArea = $('exportArea'), $copyBtn = $('copyBtn'), $downloadBtn = $('downloadBtn');
+  const $modalWarn = $('modalWarn');
+  const $resetModal = $('resetModal'), $resetBackdrop = $('resetBackdrop'), $resetClose = $('resetClose');
+  const $resetCancel = $('resetCancel'), $resetConfirm = $('resetConfirm');
+
+  function renderQuestion() {
+    const q = QUESTIONS[current];
+    const ch = CHAPTERS.find(c => c.id === q.chapter);
+    $qaChapter.textContent = ch.title;
+    $qaQuestion.textContent = q.question;
+    $qaHint.textContent = q.hint || '';
+    $qaInput.placeholder = q.placeholder || '';
+    $qaInput.value = answers[current] || '';
+    $qaShortcut.textContent = `${modKey} + Enter to proceed`;
+
+    $progressFill.style.width = `${((current + 1) / QUESTIONS.length) * 100}%`;
+    $progressText.textContent = `${current + 1} / ${QUESTIONS.length}`;
+
+    $prevBtn.style.visibility = current === 0 ? 'hidden' : 'visible';
+    $nextBtn.innerHTML = current === QUESTIONS.length - 1
+      ? 'Finish <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'
+      : 'Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+
+    renderPreview();
+    $qaInput.focus();
+  }
+
+  function renderPreview() {
+    const parts = [];
+    let lastCh = '';
+    for (let i = 0; i < QUESTIONS.length; i++) {
+      const a = answers[i];
+      if (!a || !a.trim()) continue;
+      const q = QUESTIONS[i];
+      const ch = CHAPTERS.find(c => c.id === q.chapter);
+      if (q.chapter !== lastCh) { parts.push(`<h4 class="pv-chapter">${ch.title}</h4>`); lastCh = q.chapter; }
+      parts.push(`<p class="pv-paragraph">${esc(a.trim())}</p>`);
+    }
+    $previewContent.innerHTML = parts.length === 0
+      ? '<div class="preview-empty">Your SKILL.md will take shape here as you answer...</div>'
+      : parts.join('');
+    $previewContent.scrollTop = $previewContent.scrollHeight;
+  }
+
+  function saveAnswer() { answers[current] = $qaInput.value; saveState(); renderPreview(); }
+
+  let debounce;
+  $qaInput.addEventListener('input', () => { clearTimeout(debounce); debounce = setTimeout(saveAnswer, 400); });
+
+  $prevBtn.addEventListener('click', () => { if (current > 0) { saveAnswer(); current--; renderQuestion(); } });
+  $nextBtn.addEventListener('click', () => {
+    saveAnswer();
+    if (current < QUESTIONS.length - 1) { current++; renderQuestion(); } else { openExport(); }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.target === $qaInput && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); $nextBtn.click(); }
+  });
+
+  function answeredCount() {
+    let n = 0;
+    for (let i = 0; i < QUESTIONS.length; i++) { if (answers[i] && answers[i].trim()) n++; }
+    return n;
+  }
+
+  function generateSKILL() {
+    const identity = (answers[0] || '').trim();
+    const name = identity.split(/[.,\uff0c\u3002]/)[0].trim() || 'You';
+    const now = new Date().toISOString().split('T')[0];
+
+    const a = i => (answers[i] || '').trim();
+    const has = i => a(i).length > 0;
+
+    const L = [];
+
+    L.push('---');
+    L.push(`name: me-perspective`);
+    L.push('description: |');
+    L.push(`  ${name}'s cognitive operating system.`);
+    L.push(`  Self-distilled thinking framework: mental models, decision heuristics,`);
+    L.push(`  expression DNA, anti-patterns, and honest boundaries.`);
+    L.push(`trigger:`);
+    L.push(`  - "think like me"`);
+    L.push(`  - "how would I approach"`);
+    L.push(`  - "my perspective on"`);
+    L.push(`  - "what would I decide"`);
+    L.push('---');
+    L.push('');
+
+    L.push(`# ${name} -- Cognitive Operating System`);
+    L.push('');
+
+    if (has(2)) L.push(`> ${a(2)}`);
+    else if (identity) L.push(`> ${identity}`);
+    else L.push('> A mind distilled into words.');
+    L.push('');
+
+    L.push('## Identity');
+    L.push('');
+    if (identity) {
+      L.push(identity);
+      L.push('');
+    }
+
+    L.push('## Mental Models');
+    L.push('');
+    if (has(1)) {
+      L.push('### Primary Framework');
+      L.push('');
+      L.push(a(1));
+      L.push('');
+    }
+    if (has(2)) {
+      L.push('### Core Belief (Cross-Domain)');
+      L.push('');
+      L.push(a(2));
+      L.push('');
+    }
+    if (has(3)) {
+      L.push('### Contrarian Edge');
+      L.push('');
+      L.push(a(3));
+      L.push('');
+    }
+
+    L.push('## Decision Heuristics');
+    L.push('');
+    if (has(4)) {
+      L.push('### Tiebreaker Rule');
+      L.push('');
+      L.push(a(4));
+      L.push('');
+    }
+    if (has(5)) {
+      L.push('### Pattern Recognition');
+      L.push('');
+      L.push(`**Case**: ${a(5)}`);
+      L.push('');
+    }
+    if (has(6)) {
+      L.push('### Non-Negotiable');
+      L.push('');
+      L.push(a(6));
+      L.push('');
+    }
+
+    L.push('## Expression DNA');
+    L.push('');
+    if (has(7)) L.push(a(7), '');
+
+    L.push('## Anti-patterns');
+    L.push('');
+    if (has(8)) {
+      L.push('### Absolute Never');
+      L.push('');
+      L.push(a(8));
+      L.push('');
+    }
+    if (has(9)) {
+      L.push('### Abandoned Value');
+      L.push('');
+      L.push(a(9));
+      L.push('');
+    }
+
+    L.push('## Honest Boundaries');
+    L.push('');
+    if (has(10)) {
+      L.push('### Known Weakness');
+      L.push('');
+      L.push(a(10));
+      L.push('');
+    }
+    if (has(11)) {
+      L.push('### Distilled Wisdom');
+      L.push('');
+      L.push(a(11));
+      L.push('');
+    }
+
+    L.push('---');
+    L.push('');
+    L.push(`*Self-distilled ${now} via [ME](https://github.com/allengaller/me). Inspired by [Nuwa](https://github.com/alchaincyf/nuwa-skill).*`);
+
+    return L.join('\n');
+  }
+
+  function openExport() {
+    const md = generateSKILL();
+    $exportArea.value = md;
+    $modalWarn.style.display = answeredCount() === 0 ? 'block' : 'none';
+    $exportModal.style.display = 'flex';
+  }
+
+  $('exportBtn').addEventListener('click', openExport);
+  $modalBackdrop.addEventListener('click', () => { $exportModal.style.display = 'none'; });
+  $modalClose.addEventListener('click', () => { $exportModal.style.display = 'none'; });
+  $copyBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText($exportArea.value).then(() => {
+      $copyBtn.textContent = 'Copied!'; setTimeout(() => { $copyBtn.textContent = 'Copy to clipboard'; }, 2000);
+    });
+  });
+  $downloadBtn.addEventListener('click', () => {
+    const b = new Blob([$exportArea.value], { type: 'text/markdown' });
+    const u = URL.createObjectURL(b);
+    const a = document.createElement('a'); a.href = u; a.download = 'SKILL.md'; a.click();
+    URL.revokeObjectURL(u);
+  });
+
+  $('resetBtn').addEventListener('click', () => { $resetModal.style.display = 'flex'; });
+  $resetBackdrop.addEventListener('click', () => { $resetModal.style.display = 'none'; });
+  $resetClose.addEventListener('click', () => { $resetModal.style.display = 'none'; });
+  $resetCancel.addEventListener('click', () => { $resetModal.style.display = 'none'; });
+  $resetConfirm.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    current = 0;
+    answers = {};
+    $resetModal.style.display = 'none';
+    renderQuestion();
+  });
+
+  loadState();
+  if (current >= QUESTIONS.length) current = 0;
+  renderQuestion();
+</script>
+
+<style>
+  .qa-page { min-height: calc(100vh - 56px); }
+
+  .qa-page-header {
+    text-align: center;
+    padding: 2.5rem 2rem 0;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  .qa-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .qa-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+  .qa-title em { color: var(--accent); }
+
+  .qa-desc {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .qa-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 56px - 180px);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .preview-col {
+    background: var(--bg-raised);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .preview-top {
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .preview-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  .preview-actions { display: flex; gap: 0.5rem; }
+
+  .btn-icon {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: color var(--transition);
+    display: flex;
+  }
+  .btn-icon:hover { color: var(--text); }
+
+  .preview-scroll {
+    flex: 1;
+    padding: 2rem 1.5rem;
+    overflow-y: auto;
+  }
+
+  .preview-empty {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+
+  .pv-chapter {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .pv-chapter:first-child { margin-top: 0; }
+
+  .pv-paragraph {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 0.75rem;
+  }
+
+  .qa-col {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 3rem;
+  }
+
+  .qa-progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 1px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-text {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .qa-body { flex: 1; }
+
+  .qa-chapter {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .qa-question {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+  }
+
+  .qa-hint {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .qa-input {
+    width: 100%;
+    min-height: 140px;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    resize: vertical;
+    padding: 0.9rem 1rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font-body);
+    transition: border-color var(--transition);
+    outline: none;
+  }
+  .qa-input:focus { border-color: var(--accent-border); }
+  .qa-input::placeholder { color: var(--text-muted); font-style: italic; }
+
+  .qa-shortcut {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    opacity: 0.7;
+  }
+
+  .qa-nav {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 2rem;
+    margin-top: auto;
+  }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .modal-body {
+    position: relative;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 640px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-header h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .modal-hint {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-subtle);
+    line-height: 1.5;
+  }
+
+  .modal-hint code {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    background: var(--bg);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    color: var(--text-secondary);
+  }
+
+  .modal-hint a {
+    color: var(--accent);
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+
+  .modal-warn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--accent);
+    background: var(--accent-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .modal-area {
+    flex: 1;
+    padding: 1.5rem;
+    background: var(--bg);
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.7;
+    resize: none;
+    outline: none;
+  }
+
+  .modal-prompt {
+    padding: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .modal-actions {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .btn-danger {
+    background: var(--red);
+    color: #fff;
+  }
+  .btn-danger:hover { opacity: 0.9; color: #fff; }
+
+  @media (max-width: 768px) {
+    .qa-split {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+    }
+    .preview-col {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      max-height: 35vh;
+    }
+    .qa-col { padding: 1.5rem; }
+    .qa-question { font-size: 1.25rem; }
+  }
+</style>
