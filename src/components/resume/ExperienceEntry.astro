@@ -1,0 +1,100 @@
+---
+interface Props {
+  title: string;
+  company?: string;
+  period: string;
+  description?: string;
+  achievements?: string[];
+}
+
+const { title, company, period, description, achievements } = Astro.props;
+---
+
+<div class="experience-entry">
+  <div class="entry-header">
+    <div class="entry-title-group">
+      <h3 class="entry-title">{title}</h3>
+      {company && <span class="entry-company">@ {company}</span>}
+    </div>
+    <span class="entry-period">{period}</span>
+  </div>
+  {description && <p class="entry-description">{description}</p>}
+  {achievements && achievements.length > 0 && (
+    <ul class="entry-achievements">
+      {achievements.map(item => <li>{item}</li>)}
+    </ul>
+  )}
+</div>
+
+<style>
+  .experience-entry {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .experience-entry:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .entry-title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .entry-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .entry-company {
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .entry-period {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .entry-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .entry-achievements {
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .entry-achievements li {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .entry-achievements li::marker {
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,81 @@
+---
+interface Props {
+  src?: string;
+  alt?: string;
+  name?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+}
+
+const {
+  src,
+  alt = '',
+  name = '',
+  size = 'md',
+  class: className = ''
+} = Astro.props;
+
+const initials = name
+  .split(' ')
+  .map(n => n[0])
+  .slice(0, 2)
+  .join('')
+  .toUpperCase();
+---
+
+<div class:list={['avatar', `avatar-${size}`, className]}>
+  {src ? (
+    <img src={src} alt={alt || name} class="avatar-img" />
+  ) : (
+    <span class="avatar-initials">{initials}</span>
+  )}
+</div>
+
+<style>
+  .avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--accent-dim);
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 0.7rem;
+  }
+
+  .avatar-md {
+    width: 48px;
+    height: 48px;
+    font-size: 0.9rem;
+  }
+
+  .avatar-lg {
+    width: 72px;
+    height: 72px;
+    font-size: 1.2rem;
+  }
+
+  .avatar-xl {
+    width: 120px;
+    height: 120px;
+    font-size: 2rem;
+  }
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-initials {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--accent);
+  }
+</style>

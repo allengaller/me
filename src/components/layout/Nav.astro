@@ -1,0 +1,137 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/wizard', label: 'Wizard' },
+  { href: '/autobiography', label: 'Autobiography' },
+  { href: '/distill', label: 'Distill' },
+  { href: '/resume', label: 'Resume' },
+  { href: '/github', label: 'GitHub' },
+];
+---
+
+<header class="site-header">
+  <nav class="nav-inner">
+    <a href="/" class="nav-brand">
+      <span class="brand-m">M</span><span class="brand-e">E</span><span class="brand-dot">.</span>
+    </a>
+
+    <div class="nav-links">
+      {navLinks.map(link => (
+        <a
+          href={link.href}
+          class:list={['nav-link', { active: currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) }]}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <ThemeToggle />
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(var(--bg-rgb, 250, 250, 250), 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  [data-theme="dark"] .site-header {
+    background: rgba(8, 8, 8, 0.75);
+  }
+
+  .nav-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .nav-brand {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--text);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+  .nav-brand:hover { color: var(--text); }
+
+  .brand-m {
+    color: var(--accent);
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .brand-e { color: var(--text); }
+  .brand-dot { color: var(--text-muted); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .nav-link {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color var(--transition);
+    position: relative;
+    text-decoration: none;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: width 0.3s var(--ease-out);
+  }
+
+  .nav-link:hover {
+    color: var(--text-secondary);
+  }
+  .nav-link:hover::after { width: 100%; }
+
+  .nav-link.active {
+    color: var(--text);
+  }
+  .nav-link.active::after { width: 100%; }
+
+  @media (max-width: 768px) {
+    .nav-inner { padding: 0 1.25rem; }
+    .nav-links { gap: 1.25rem; }
+    .nav-link { font-size: 0.7rem; }
+  }
+
+  @media (max-width: 480px) {
+    .nav-links { gap: 0.85rem; }
+    .nav-link { font-size: 0.65rem; letter-spacing: 0.02em; }
+  }
+</style>

@@ -1,0 +1,162 @@
+---
+import SectionHeader from '../ui/SectionHeader.astro';
+
+interface Experience {
+  title: string;
+  title_zh?: string;
+  company: string;
+  company_zh?: string;
+  period: string;
+  description: string;
+  description_zh?: string;
+  achievements?: string[];
+}
+
+interface Props {
+  experiences: Experience[];
+}
+
+const { experiences } = Astro.props;
+
+// Show up to 3 experiences
+const displayExperiences = experiences.slice(0, 3);
+---
+
+<section class="experience-section">
+  <div class="experience-inner">
+    <SectionHeader eyebrow="Career" title="Experience" />
+
+    <div class="timeline">
+      {displayExperiences.map((exp, i) => (
+        <div class="timeline-item reveal" style={`animation-delay: ${i * 0.15}s`}>
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <h3 class="timeline-title">{exp.title}</h3>
+              <span class="timeline-company">@ {exp.company}</span>
+            </div>
+            <span class="timeline-period">{exp.period}</span>
+            <p class="timeline-desc">{exp.description}</p>
+            {exp.achievements && exp.achievements.length > 0 && (
+              <ul class="timeline-achievements">
+                {exp.achievements.slice(0, 3).map(achievement => (
+                  <li>{achievement}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .experience-section {
+    padding: 6rem 2rem;
+    background: var(--bg-raised);
+  }
+
+  .experience-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-bottom: 2.5rem;
+  }
+
+  .timeline-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .timeline-marker {
+    position: absolute;
+    left: -2rem;
+    top: 0.4rem;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translateX(-4px);
+  }
+
+  .timeline-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .timeline-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .timeline-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .timeline-company {
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .timeline-period {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .timeline-desc {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .timeline-achievements {
+    margin-top: 0.75rem;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .timeline-achievements li {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .timeline-achievements li::marker {
+    color: var(--accent);
+  }
+
+  @media (max-width: 768px) {
+    .experience-section {
+      padding: 4rem 1.5rem;
+    }
+  }
+</style>

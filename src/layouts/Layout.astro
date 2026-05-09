@@ -1,11 +1,17 @@
 ---
 import config from '../config/profile.json';
+import Nav from '../components/layout/Nav.astro';
+import Footer from '../components/layout/Footer.astro';
+import '../styles/themes/default.css';
+import '../styles/themes/dark.css';
+import '../styles/global.css';
+
 const profile = config.profile;
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={profile.about} />
@@ -18,28 +24,34 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     <title>{profile.name} | {profile.title}</title>
   </head>
   <body>
-    <header class="site-header">
-      <nav class="nav-inner">
-        <a href="/" class="nav-brand">
-          <span class="brand-m">M</span><span class="brand-e">E</span><span class="brand-dot">.</span>
-        </a>
-        <div class="nav-links">
-          <a href="/" class:list={[{ active: currentPath === '/' && !Astro.url.pathname.startsWith('/wizard') }]}>Home</a>
-          <a href="/wizard" class:list={[{ active: currentPath.startsWith('/wizard') }]}>Wizard</a>
-          <a href="/autobiography" class:list={[{ active: currentPath === '/autobiography' }]}>Autobiography</a>
-          <a href="/distill" class:list={[{ active: currentPath === '/distill' }]}>Distill</a>
-          <a href="/preview" class:list={[{ active: currentPath === '/preview' }]}>Preview</a>
-        </div>
-      </nav>
-    </header>
+    <Nav currentPath={currentPath} />
 
     <main class="site-main">
       <slot />
     </main>
 
+    <Footer />
+
     <script>
+      // Initialize theme from localStorage
+      const storedTheme = localStorage.getItem('me_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', storedTheme);
+
+      // Scroll reveal animation
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+      // Language toggle
       let lang = localStorage.getItem('lang') || 'zh';
-      function setLanguage(newLang) {
+      function setLanguage(newLang: string) {
         lang = newLang;
         localStorage.setItem('lang', lang);
         updatePage();
@@ -57,172 +69,6 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 </html>
 
 <style is:global>
-  :root {
-    --bg: #080808;
-    --bg-raised: #101010;
-    --bg-overlay: #181818;
-    --bg-inset: #0c0c0c;
-    --border: #1e1e1e;
-    --border-subtle: #161616;
-    --border-accent: rgba(186, 140, 92, 0.18);
-    --text: #e2deda;
-    --text-secondary: #8a827a;
-    --text-muted: #5c5650;
-    --accent: #ba8c5c;
-    --accent-hover: #cda06e;
-    --accent-dim: rgba(186, 140, 92, 0.06);
-    --accent-border: rgba(186, 140, 92, 0.18);
-    --red: #b84c4c;
-    --green: #6b9a6b;
-    --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-display: 'Cinzel', Georgia, 'Times New Roman', serif;
-    --font-mono: 'Fira Code', 'SF Mono', 'Fira Code', monospace;
-    --radius: 4px;
-    --radius-lg: 8px;
-    --transition: 0.2s ease;
-    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-
-    --bg-primary: var(--bg);
-    --bg-secondary: var(--bg-raised);
-    --bg-tertiary: var(--bg-overlay);
-    --text-primary: var(--text);
-    --accent-glow: var(--accent-dim);
-    --accent-secondary: var(--accent-hover);
-    --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  }
-
-  @keyframes page-in {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  *, *::before, *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: var(--font-body);
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.65;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    position: relative;
-  }
-
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.018;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 200px;
-    z-index: 9999;
-  }
-
-  .site-main {
-    animation: page-in 0.5s var(--ease-out);
-    padding-top: 56px;
-    min-height: 100vh;
-  }
-
-  ::selection {
-    background: var(--accent);
-    color: var(--bg);
-  }
-
-  a {
-    color: var(--accent);
-    text-decoration: none;
-    transition: color var(--transition);
-  }
-  a:hover { color: var(--accent-hover); }
-
-  img { display: block; max-width: 100%; }
-
-  .site-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background: rgba(8, 8, 8, 0.75);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  .nav-inner {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-brand {
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: 1rem;
-    color: var(--text);
-    letter-spacing: 0.08em;
-    transition: color var(--transition);
-    text-decoration: none;
-  }
-  .nav-brand:hover { color: var(--text); }
-
-  .brand-m {
-    color: var(--accent);
-    font-size: 1.15rem;
-    font-weight: 700;
-  }
-  .brand-e {
-    color: var(--text);
-  }
-  .brand-dot {
-    color: var(--text-muted);
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 2rem;
-  }
-
-  .nav-links a {
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    transition: color var(--transition);
-    position: relative;
-    text-decoration: none;
-  }
-  .nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--accent);
-    transition: width 0.3s var(--ease-out);
-  }
-  .nav-links a:hover { color: var(--text-secondary); }
-  .nav-links a:hover::after { width: 100%; }
-  .nav-links a.active { color: var(--text); }
-  .nav-links a.active::after { width: 100%; }
-
   input, textarea, select {
     font-family: var(--font-body);
     font-size: 0.88rem;
@@ -240,53 +86,4 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
   }
   textarea { resize: vertical; line-height: 1.6; }
   label { display: block; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.35rem; font-weight: 500; letter-spacing: 0.02em; }
-
-  button, .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 1.3rem;
-    font-family: var(--font-body);
-    font-size: 0.82rem;
-    font-weight: 600;
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all var(--transition);
-    text-decoration: none;
-    letter-spacing: 0.02em;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: var(--bg);
-  }
-  .btn-primary:hover {
-    background: var(--accent-hover);
-    color: var(--bg);
-    transform: none;
-  }
-  .btn-secondary {
-    background: transparent;
-    color: var(--text-secondary);
-    border: 1px solid var(--border);
-  }
-  .btn-secondary:hover {
-    border-color: var(--text-muted);
-    color: var(--text);
-  }
-  .btn-large {
-    padding: 0.75rem 2rem;
-    font-size: 0.88rem;
-  }
-
-  @media (max-width: 768px) {
-    .nav-inner { padding: 0 1.25rem; }
-    .nav-links { gap: 1.25rem; }
-    .nav-links a { font-size: 0.7rem; }
-  }
-
-  @media (max-width: 480px) {
-    .nav-links { gap: 0.85rem; }
-    .nav-links a { font-size: 0.65rem; letter-spacing: 0.02em; }
-  }
 </style>

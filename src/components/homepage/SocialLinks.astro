@@ -1,0 +1,77 @@
+---
+interface SocialLink {
+  platform: string;
+  url: string;
+  icon?: string;
+}
+
+interface Props {
+  social: SocialLink[];
+}
+
+const { social } = Astro.props;
+---
+
+<div class="social-links reveal">
+  {social.map(link => (
+    <a
+      href={link.url}
+      class="social-link"
+      target={link.url.startsWith('http') ? '_blank' : undefined}
+      rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+      aria-label={link.platform}
+    >
+      {link.icon && <span class="social-icon" set:html={link.icon} />}
+      <span class="social-label">{link.platform}</span>
+    </a>
+  ))}
+</div>
+
+<style>
+  .social-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all var(--transition);
+  }
+
+  .social-link:hover {
+    border-color: var(--accent-border);
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .social-icon {
+    display: flex;
+    align-items: center;
+    width: 18px;
+    height: 18px;
+  }
+
+  .social-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .social-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+</style>

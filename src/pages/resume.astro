@@ -1,0 +1,274 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ResumeHeader from '../components/resume/ResumeHeader.astro';
+import ResumeSection from '../components/resume/ResumeSection.astro';
+import ExperienceEntry from '../components/resume/ExperienceEntry.astro';
+import SkillsMatrix from '../components/resume/SkillsMatrix.astro';
+import Button from '../components/ui/Button.astro';
+
+import config from '../config/profile.json';
+const { profile, experience, skills, projects, social } = config;
+---
+
+<Layout>
+  <div class="resume-page">
+    <div class="resume-container">
+      <div class="resume-actions">
+        <Button variant="primary" id="print-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+          </svg>
+          Print / Save PDF
+        </Button>
+        <Button variant="secondary" id="download-md">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download Markdown
+        </Button>
+      </div>
+
+      <div class="resume-content">
+        <ResumeHeader
+          name={profile.name}
+          title={profile.title}
+          location={profile.location}
+          contact={profile.contact}
+          avatar={profile.avatar}
+          {social}
+        />
+
+        <ResumeSection title="About">
+          <p class="about-text">{profile.about}</p>
+        </ResumeSection>
+
+        <ResumeSection title="Experience">
+          {experience.map(exp => (
+            <ExperienceEntry
+              title={exp.title}
+              company={exp.company}
+              period={exp.period}
+              description={exp.description}
+              achievements={exp.achievements}
+            />
+          ))}
+        </ResumeSection>
+
+        <ResumeSection title="Skills">
+          <SkillsMatrix skills={skills} />
+        </ResumeSection>
+
+        {projects.length > 0 && (
+          <ResumeSection title="Projects">
+            <div class="projects-list">
+              {projects.map(proj => (
+                <div class="project-item">
+                  <div class="project-header">
+                    <h3 class="project-title">{proj.title}</h3>
+                    <div class="project-links">
+                      {proj.github && (
+                        <a href={proj.github} target="_blank" rel="noopener noreferrer" class="project-link">GitHub</a>
+                      )}
+                      {proj.live && (
+                        <a href={proj.live} target="_blank" rel="noopener noreferrer" class="project-link">Live</a>
+                      )}
+                    </div>
+                  </div>
+                  <p class="project-desc">{proj.description}</p>
+                  <div class="project-tech">
+                    {proj.technologies.map(t => <span class="tech-tag">{t}</span>)}
+                  </div>
+                  {proj.highlights && proj.highlights.length > 0 && (
+                    <ul class="project-highlights">
+                      {proj.highlights.map(h => <li>{h}</li>)}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ResumeSection>
+        )}
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { downloadResumeMarkdown, openResumeHTML } from '../utils/resume-generator.js';
+
+  const resumeData = {
+    profile: {
+      name: document.querySelector('[data-profile-name]')?.textContent || '',
+      title: document.querySelector('[data-profile-title]')?.textContent || '',
+      location: '',
+      contact: '',
+      about: '',
+      avatar: ''
+    },
+    experience: [],
+    skills: [],
+    projects: [],
+    social: []
+  };
+
+  document.getElementById('print-btn')?.addEventListener('click', () => {
+    window.print();
+  });
+
+  document.getElementById('download-md')?.addEventListener('click', () => {
+    const data = {
+      profile: {
+        name: 'Profile Name',
+        title: 'Title',
+        location: 'Location',
+        contact: 'email@example.com',
+        about: 'About me...',
+        avatar: ''
+      },
+      experience: [],
+      skills: [],
+      projects: [],
+      social: []
+    };
+    downloadResumeMarkdown(data, 'resume.md');
+  });
+</script>
+
+<style>
+  .resume-page {
+    padding: 2rem;
+    min-height: calc(100vh - 56px);
+    background: var(--bg);
+  }
+
+  .resume-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .resume-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: flex-end;
+  }
+
+  .resume-content {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+  }
+
+  .about-text {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .project-item {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .project-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .project-links {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .project-link {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+
+  .project-link:hover {
+    color: var(--accent);
+  }
+
+  .project-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .tech-tag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    background: var(--bg-overlay);
+    border-radius: 3px;
+    color: var(--text-muted);
+  }
+
+  .project-highlights {
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .project-highlights li {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .project-highlights li::marker {
+    color: var(--accent);
+  }
+
+  @media print {
+    .resume-page {
+      padding: 0;
+    }
+
+    .resume-actions {
+      display: none;
+    }
+
+    .resume-content {
+      border: none;
+      border-radius: 0;
+      padding: 0;
+    }
+  }
+</style>

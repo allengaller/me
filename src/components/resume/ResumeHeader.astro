@@ -1,0 +1,124 @@
+---
+import Avatar from '../ui/Avatar.astro';
+
+interface Props {
+  name: string;
+  title: string;
+  location?: string;
+  contact?: string;
+  avatar?: string;
+  social?: Array<{platform: string; url: string; icon?: string}>;
+}
+
+const { name, title, location, contact, avatar, social } = Astro.props;
+---
+
+<div class="resume-header">
+  <div class="header-left">
+    <Avatar src={avatar} name={name} size="xl" />
+  </div>
+  <div class="header-right">
+    <h1 class="name">{name}</h1>
+    <p class="title">{title}</p>
+    <div class="contact-info">
+      {location && <span class="contact-item">{location}</span>}
+      {contact && <span class="contact-item">{contact}</span>}
+    </div>
+    {social && social.length > 0 && (
+      <div class="social-links">
+        {social.slice(0, 4).map(link => (
+          <a href={link.url} class="social-link" target="_blank" rel="noopener noreferrer">
+            {link.platform}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .resume-header {
+    display: flex;
+    gap: 2rem;
+    padding: 2.5rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 2rem;
+  }
+
+  .header-left {
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .name {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .title {
+    font-size: 1.1rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .contact-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .contact-item {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .social-link {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition);
+  }
+
+  .social-link:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 600px) {
+    .resume-header {
+      flex-direction: column;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .header-left {
+      display: flex;
+      justify-content: center;
+    }
+
+    .contact-info {
+      justify-content: center;
+    }
+
+    .social-links {
+      justify-content: center;
+    }
+  }
+</style>

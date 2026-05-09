@@ -1,0 +1,57 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span class="footer-brand">ME<span class="brand-dot">.</span></span>
+    <span class="footer-note">Personal profile generator. All data stays in your browser.</span>
+    <span class="footer-year">&copy; {currentYear}</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border-subtle);
+    padding: 2rem;
+    margin-top: 4rem;
+  }
+
+  .footer-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .footer-brand {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+  }
+
+  .brand-dot { color: var(--text-muted); }
+
+  .footer-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .footer-year {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 768px) {
+    .footer-inner {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+  }
+</style>

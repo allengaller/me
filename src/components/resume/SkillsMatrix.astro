@@ -1,0 +1,110 @@
+---
+import Badge from '../ui/Badge.astro';
+
+interface Skill {
+  name: string;
+  level: string;
+  technologies: string[];
+}
+
+interface Props {
+  skills: Skill[];
+}
+
+const { skills } = Astro.props;
+
+const levelMap: Record<string, string> = {
+  'Expert': 'Expert',
+  'Advanced': 'Advanced',
+  'Intermediate': 'Mid',
+  'Beginner': 'Beginner'
+};
+
+function getLevelPercent(level: string): number {
+  switch (level) {
+    case 'Expert': return 95;
+    case 'Advanced': return 75;
+    case 'Intermediate': return 50;
+    case 'Beginner': return 25;
+    default: return 30;
+  }
+}
+
+const skillList = skills || [];
+---
+
+<div class="skills-matrix">
+  {skillList.map(skill => (
+    <div class="skill-item">
+      <div class="skill-header">
+        <span class="skill-name">{skill.name}</span>
+        <Badge variant="accent" size="sm">{levelMap[skill.level] || skill.level}</Badge>
+      </div>
+      <div class="skill-bar">
+        <span class="bar-fill" style={`width: ${getLevelPercent(skill.level)}%`}></span>
+      </div>
+      <div class="skill-tech">
+        {skill.technologies.slice(0, 5).map(tech => (
+          <span class="tech-tag">{tech}</span>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .skills-matrix {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .skill-item {
+    padding: 1rem;
+    background: var(--bg-overlay);
+    border-radius: var(--radius);
+  }
+
+  .skill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .skill-name {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+
+  .skill-bar {
+    height: 3px;
+    background: var(--bg-inset);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+  }
+
+  .bar-fill {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .skill-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .tech-tag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 0.1rem 0.35rem;
+    background: var(--bg-inset);
+    border-radius: 2px;
+    color: var(--text-muted);
+  }
+</style>

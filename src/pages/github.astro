@@ -1,195 +1,194 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import config from '../config/profile.json';
 
+const profile = config.profile;
+const { social, projects } = config;
 const GITHUB_EMAIL = 'allengaller@gmail.com';
 const GITHUB_API = 'https://api.github.com';
 
-function getLanguageColor(language) {
-  const colors = {
-    'JavaScript': '#f1e05a', 'TypeScript': '#3178c6', 'Python': '#3572A5',
-    'Java': '#b07219', 'Go': '#00ADD8', 'Rust': '#dea584',
-    'C++': '#f34b7d', 'C': '#555555', 'C#': '#239120',
-    'PHP': '#4F5D95', 'Ruby': '#701516', 'Swift': '#F05138',
-    'Kotlin': '#A97BFF', 'Dart': '#00B4AB', 'HTML': '#e34c26',
-    'CSS': '#563d7c', 'Shell': '#89e051', 'Vue': '#41b883', 'Astro': '#FF5D01',
-  };
-  return colors[language] || '#8b949e';
-}
-
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const days = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-  if (days === 0) return 'today';
-  if (days === 1) return 'yesterday';
-  if (days < 7) return `${days} days ago`;
-  if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
-  if (days < 365) return `${Math.floor(days / 30)} months ago`;
-  return `${Math.floor(days / 365)} years ago`;
-}
-
-async function fetchGitHubData() {
-  try {
-    const searchResponse = await fetch(`${GITHUB_API}/search/users?q=${encodeURIComponent(GITHUB_EMAIL)}`);
-    const searchData = await searchResponse.json();
-    if (!searchData.items || searchData.items.length === 0) return { error: 'User not found' };
-
-    const username = searchData.items[0].login;
-    const userResponse = await fetch(`${GITHUB_API}/users/${username}`);
-    const user = await userResponse.json();
-
-    const reposResponse = await fetch(`${GITHUB_API}/users/${username}/repos?sort=updated&per_page=100`);
-    const repos = await reposResponse.json();
-
-    const orgsResponse = await fetch(`${GITHUB_API}/user/${username}/orgs`);
-    const orgs = await orgsResponse.json();
-
-    const orgReposMap = new Map();
-    if (Array.isArray(orgs)) {
-      for (const org of orgs) {
-        const orgReposResponse = await fetch(`${GITHUB_API}/orgs/${org.login}/repos?sort=updated&per_page=100`);
-        const orgRepos = await orgReposResponse.json();
-        orgReposMap.set(org.login, { org, repos: Array.isArray(orgRepos) ? orgRepos : [] });
-      }
-    }
-
-    return { user, username, repos: Array.isArray(repos) ? repos : [], orgs: Array.isArray(orgs) ? orgs : [], orgReposMap, error: null };
-  } catch (error) {
-    return { error: error.message, user: null, username: null, repos: [], orgs: [], orgReposMap: new Map() };
-  }
-}
-
-const githubData = await fetchGitHubData();
+// Extract GitHub URL from social links
+const githubSocial = social.find(s => s.platform === 'GitHub');
+const githubUsername = githubSocial?.url?.replace('https://github.com/', '') || '';
 ---
 
 <Layout>
   <div class="gh-page">
-    <div class="gh-intro">
-      <p class="gh-eyebrow">GitHub</p>
-      <h1 class="gh-title">Your public <em>repos.</em></h1>
+    <div class="gh-mode-toggle">
+      <button class="mode-btn active" data-mode="api">Live API</button>
+      <button class="mode-btn" data-mode="static">From Profile</button>
     </div>
 
-    {githubData.error ? (
-      <div class="gh-empty">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-        <h3>Unable to load GitHub data</h3>
-        <p>{githubData.error}</p>
-      </div>
-    ) : (
-      <>
-        {githubData.user && (
-          <div class="gh-profile">
-            <img src={githubData.user.avatar_url} alt={githubData.user.name || githubData.user.login} class="gh-avatar" />
-            <div class="gh-profile-info">
-              <h2>{githubData.user.name || githubData.user.login}</h2>
-              <span class="gh-login">@{githubData.user.login}</span>
-              {githubData.user.bio && <p class="gh-bio">{githubData.user.bio}</p>}
-              <div class="gh-stats">
-                <div class="gh-stat"><strong>{githubData.user.public_repos || 0}</strong><span>Repos</span></div>
-                <div class="gh-stat"><strong>{githubData.user.followers || 0}</strong><span>Followers</span></div>
-                <div class="gh-stat"><strong>{githubData.user.following || 0}</strong><span>Following</span></div>
-              </div>
-              <div class="gh-meta">
-                {githubData.user.location && (
-                  <span class="gh-meta-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    {githubData.user.location}
-                  </span>
-                )}
-                {githubData.user.company && (
-                  <span class="gh-meta-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                    {githubData.user.company}
-                  </span>
-                )}
-              </div>
-              <a href={githubData.user.html_url} target="_blank" rel="noopener noreferrer" class="btn btn-secondary">View on GitHub</a>
-            </div>
-          </div>
-        )}
+    <div class="gh-intro">
+      <p class="gh-eyebrow">GitHub</p>
+      <h1 class="gh-title">Your GitHub <em>presence.</em></h1>
+    </div>
 
-        {githubData.repos.length > 0 && (
+    <div id="gh-content" class="gh-content">
+      <!-- Content will be loaded based on mode -->
+    </div>
+  </div>
+
+  <script>
+    const GITHUB_EMAIL = 'allengaller@gmail.com';
+    const GITHUB_API = 'https://api.github.com';
+    const profile = { name: 'Your Name', about: '', location: '' };
+    const projects = [];
+    const githubUsername = '';
+
+    const content = document.getElementById('gh-content');
+    let currentMode = 'api';
+
+    function getLanguageColor(language) {
+      const colors = {
+        'JavaScript': '#f1e05a', 'TypeScript': '#3178c6', 'Python': '#3572A5',
+        'Java': '#b07219', 'Go': '#00ADD8', 'Rust': '#dea584',
+        'C++': '#f34b7d', 'C': '#555555', 'C#': '#239120',
+        'PHP': '#4F5D95', 'Ruby': '#701516', 'Swift': '#F05138',
+        'Kotlin': '#A97BFF', 'Dart': '#00B4AB', 'HTML': '#e34c26',
+        'CSS': '#563d7c', 'Shell': '#89e051', 'Vue': '#41b883', 'Astro': '#FF5D01',
+      };
+      return colors[language] || '#8b949e';
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const days = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+      if (days === 0) return 'today';
+      if (days === 1) return 'yesterday';
+      if (days < 7) return `${days} days ago`;
+      if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+      if (days < 365) return `${Math.floor(days / 30)} months ago`;
+      return `${Math.floor(days / 365)} years ago`;
+    }
+
+    // Static mode - render from profile.json
+    function renderStatic() {
+      const githubProjects = projects.filter(p => p.github?.includes('github.com'));
+      content.innerHTML = `
+        <div class="gh-profile">
+          <div class="gh-avatar-placeholder">
+            <span>${profile.name.split(' ').map(n => n[0]).join('').toUpperCase()}</span>
+          </div>
+          <div class="gh-profile-info">
+            <h2>${profile.name}</h2>
+            <span class="gh-login">@${githubUsername || 'username'}</span>
+            <p class="gh-bio">${profile.about || 'No bio available'}</p>
+            <div class="gh-meta">
+              ${profile.location ? `<span class="gh-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${profile.location}</span>` : ''}
+            </div>
+            <a href="https://github.com/${githubUsername}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">View on GitHub</a>
+          </div>
+        </div>
+        ${githubProjects.length > 0 ? `
           <div class="gh-section">
             <div class="gh-section-head">
               <h2>Repositories</h2>
-              <span class="gh-badge">{githubData.repos.length}</span>
+              <span class="gh-badge">${githubProjects.length}</span>
             </div>
             <div class="gh-repos">
-              {githubData.repos.map(repo => (
-                <a href={repo.html_url} target="_blank" rel="noopener noreferrer" class="gh-repo">
+              ${githubProjects.map(repo => `
+                <a href="${repo.github}" target="_blank" rel="noopener noreferrer" class="gh-repo">
                   <div class="gh-repo-head">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                    <span class="gh-repo-name">{repo.name}</span>
+                    <span class="gh-repo-name">${repo.github.split('/').pop()}</span>
                   </div>
-                  {repo.description && <p class="gh-repo-desc">{repo.description}</p>}
+                  <p class="gh-repo-desc">${repo.description || 'No description'}</p>
                   <div class="gh-repo-meta">
-                    {repo.language && (
-                      <span class="gh-repo-lang">
-                        <span class="gh-lang-dot" style={`background:${getLanguageColor(repo.language)}`}></span>
-                        {repo.language}
-                      </span>
-                    )}
-                    <span class="gh-repo-stat">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                      {repo.stargazers_count}
-                    </span>
-                    {repo.updated_at && <span class="gh-repo-date">{formatDate(repo.updated_at)}</span>}
+                    ${repo.technologies.slice(0, 2).map(t => `<span class="gh-repo-lang"><span class="gh-lang-dot" style="background:${getLanguageColor(t)}"></span>${t}</span>`).join('')}
                   </div>
                 </a>
-              ))}
+              `).join('')}
             </div>
           </div>
-        )}
+        ` : ''}
+      `;
+    }
 
-        {githubData.orgs.length > 0 && (
-          <div class="gh-section">
-            <div class="gh-section-head">
-              <h2>Organizations</h2>
-              <span class="gh-badge">{githubData.orgs.length}</span>
+    // API mode - fetch live data
+    async function renderAPI() {
+      try {
+        const searchResponse = await fetch(`${GITHUB_API}/search/users?q=${encodeURIComponent(GITHUB_EMAIL)}`);
+        const searchData = await searchResponse.json();
+        if (!searchData.items || searchData.items.length === 0) {
+          content.innerHTML = '<div class="gh-empty"><p>User not found</p></div>';
+          return;
+        }
+
+        const username = searchData.items[0].login;
+        const userResponse = await fetch(`${GITHUB_API}/users/${username}`);
+        const user = await userResponse.json();
+
+        const reposResponse = await fetch(`${GITHUB_API}/users/${username}/repos?sort=updated&per_page=100`);
+        const repos = await reposResponse.json();
+
+        content.innerHTML = `
+          <div class="gh-profile">
+            <img src="${user.avatar_url}" alt="${user.name || user.login}" class="gh-avatar" />
+            <div class="gh-profile-info">
+              <h2>${user.name || user.login}</h2>
+              <span class="gh-login">@${user.login}</span>
+              ${user.bio ? `<p class="gh-bio">${user.bio}</p>` : ''}
+              <div class="gh-stats">
+                <div class="gh-stat"><strong>${user.public_repos || 0}</strong><span>Repos</span></div>
+                <div class="gh-stat"><strong>${user.followers || 0}</strong><span>Followers</span></div>
+                <div class="gh-stat"><strong>${user.following || 0}</strong><span>Following</span></div>
+              </div>
+              <div class="gh-meta">
+                ${user.location ? `<span class="gh-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${user.location}</span>` : ''}
+                ${user.company ? `<span class="gh-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>${user.company}</span>` : ''}
+              </div>
+              <a href="${user.html_url}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">View on GitHub</a>
             </div>
-            <div class="gh-orgs">
-              {githubData.orgs.map(org => {
-                const orgData = githubData.orgReposMap.get(org.login);
-                const orgRepos = orgData?.repos || [];
-                return (
-                  <div class="gh-org">
-                    <div class="gh-org-head">
-                      <img src={org.avatar_url} alt={org.login} class="gh-org-avatar" />
-                      <div>
-                        <h3>{org.login}</h3>
-                        {org.description && <p>{org.description}</p>}
-                      </div>
-                      <a href={org.html_url} target="_blank" rel="noopener noreferrer" class="btn-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                      </a>
+          </div>
+          ${repos.length > 0 ? `
+            <div class="gh-section">
+              <div class="gh-section-head">
+                <h2>Repositories</h2>
+                <span class="gh-badge">${repos.length}</span>
+              </div>
+              <div class="gh-repos">
+                ${repos.slice(0, 20).map(repo => `
+                  <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer" class="gh-repo">
+                    <div class="gh-repo-head">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                      <span class="gh-repo-name">${repo.name}</span>
                     </div>
-                    {orgRepos.length > 0 && (
-                      <div class="gh-org-repos">
-                        {orgRepos.slice(0, 5).map(repo => (
-                          <a href={repo.html_url} target="_blank" rel="noopener noreferrer" class="gh-org-repo">
-                            <span>{repo.name}</span>
-                            {repo.language && <span class="gh-lang-tag">{repo.language}</span>}
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                    ${repo.description ? `<p class="gh-repo-desc">${repo.description}</p>` : ''}
+                    <div class="gh-repo-meta">
+                      ${repo.language ? `<span class="gh-repo-lang"><span class="gh-lang-dot" style="background:${getLanguageColor(repo.language)}"></span>${repo.language}</span>` : ''}
+                      <span class="gh-repo-stat"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>${repo.stargazers_count}</span>
+                      <span class="gh-repo-date">${formatDate(repo.updated_at)}</span>
+                    </div>
+                  </a>
+                `).join('')}
+              </div>
             </div>
-          </div>
-        )}
+          ` : ''}
+        `;
+      } catch (error) {
+        content.innerHTML = `<div class="gh-empty"><p>Error loading GitHub data: ${error.message}</p></div>`;
+      }
+    }
 
-        {!githubData.user && !githubData.error && (
-          <div class="gh-loading">
-            <div class="gh-spinner"></div>
-            <p>Loading GitHub data...</p>
-          </div>
-        )}
-      </>
-    )}
-  </div>
-</Layout>
+    // Mode toggle handlers
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+        if (currentMode === 'static') {
+          renderStatic();
+        } else {
+          renderAPI();
+        }
+      });
+    });
+
+    // Initial render
+    renderAPI();
+  </script>
 
 <style>
   .gh-page {
@@ -513,6 +512,60 @@ const githubData = await fetchGitHubData();
     display: flex;
   }
   .btn-icon:hover { color: var(--text); }
+
+  .gh-mode-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+
+  .mode-btn {
+    padding: 0.5rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .mode-btn:hover {
+    border-color: var(--text-muted);
+    color: var(--text);
+  }
+
+  .mode-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+  }
+
+  .gh-avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--accent-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .gh-avatar-placeholder span {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .gh-content {
+    min-height: 400px;
+  }
 
   @media (max-width: 768px) {
     .gh-profile {

@@ -1,0 +1,141 @@
+---
+import SectionHeader from '../ui/SectionHeader.astro';
+import Badge from '../ui/Badge.astro';
+
+interface Skill {
+  name: string;
+  name_zh?: string;
+  level: string;
+  level_zh?: string;
+  technologies: string[];
+}
+
+interface Props {
+  skills: Skill[];
+}
+
+const { skills } = Astro.props;
+
+const levelMap: Record<string, string> = {
+  'Expert': 'Expert',
+  'Advanced': 'Advanced',
+  'Intermediate': 'Intermediate',
+  'Beginner': 'Beginner'
+};
+
+function getLevelPercent(level: string): number {
+  switch (level) {
+    case 'Expert': return 95;
+    case 'Advanced': return 75;
+    case 'Intermediate': return 50;
+    case 'Beginner': return 25;
+    default: return 30;
+  }
+}
+---
+
+<section class="skills-section">
+  <div class="skills-inner">
+    <SectionHeader eyebrow="Expertise" title="Skills" />
+
+    <div class="skills-grid">
+      {skills.map((skill, i) => (
+        <div class="skill-card reveal" style={`animation-delay: ${i * 0.1}s`}>
+          <div class="skill-header">
+            <h3 class="skill-name">{skill.name}</h3>
+            <Badge variant="accent">{levelMap[skill.level] || skill.level}</Badge>
+          </div>
+          <div class="skill-bar">
+            <span class="bar-fill" style={`--target-width: ${getLevelPercent(skill.level)}%`}></span>
+          </div>
+          <div class="skill-tech">
+            {skill.technologies.slice(0, 6).map(tech => (
+              <span class="tech-tag">{tech}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .skills-section {
+    padding: 6rem 2rem;
+  }
+
+  .skills-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .skill-card:hover {
+    border-color: var(--accent-border);
+  }
+
+  .skill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .skill-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .skill-bar {
+    height: 4px;
+    background: var(--bg-overlay);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .bar-fill {
+    display: block;
+    height: 100%;
+    width: var(--target-width);
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-hover) 100%);
+    border-radius: 2px;
+    animation: bar-grow 1.5s var(--ease-out) forwards;
+  }
+
+  .skill-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tech-tag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    background: var(--bg-inset);
+    border-radius: 3px;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 768px) {
+    .skills-section {
+      padding: 4rem 1.5rem;
+    }
+  }
+</style>

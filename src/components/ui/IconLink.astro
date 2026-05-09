@@ -1,0 +1,67 @@
+---
+interface Props {
+  href: string;
+  label: string;
+  icon?: string;
+  platform?: string;
+  class?: string;
+}
+
+const { href, label, icon, platform, class: className = '' } = Astro.props;
+
+const isExternal = href.startsWith('http') || href.startsWith('mailto');
+---
+
+<a
+  href={href}
+  class:list={['icon-link', className]}
+  target={isExternal ? '_blank' : undefined}
+  rel={isExternal ? 'noopener noreferrer' : undefined}
+  aria-label={label}
+>
+  {icon && <span class="icon" set:html={icon} />}
+  {!icon && platform && <span class="platform">{platform}</span>}
+  <slot />
+</a>
+
+<style>
+  .icon-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all var(--transition);
+  }
+
+  .icon-link:hover {
+    border-color: var(--accent-border);
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .icon {
+    display: flex;
+    align-items: center;
+    width: 18px;
+    height: 18px;
+  }
+
+  .icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .platform {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+</style>
