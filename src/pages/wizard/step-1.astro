@@ -5,6 +5,8 @@ import FormField from '../../components/wizard/FormField.astro';
 import WizardNav from '../../components/wizard/WizardNav.astro';
 import GitHubImport from '../../components/import/GitHubImport.astro';
 import FileImport from '../../components/import/FileImport.astro';
+
+import '../../styles/wizard-shared.css';
 ---
 
 <Layout>
@@ -76,7 +78,7 @@ import FileImport from '../../components/import/FileImport.astro';
 </Layout>
 
 <script>
-  import { loadDraft, saveDraft } from '../../utils/storage.js';
+  import { loadDraft, saveDraft } from '../../utils/storage';
   
   // 检查是否需要显示导入面板
   const urlParams = new URLSearchParams(window.location.search);
@@ -150,6 +152,7 @@ import FileImport from '../../components/import/FileImport.astro';
 </script>
 
 <style>
+  @import '../../styles/wizard-shared.css';
   .wizard-page {
     min-height: calc(100vh - 56px);
     padding: 3rem 2rem 4rem;

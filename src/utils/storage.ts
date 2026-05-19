@@ -3,10 +3,10 @@
  * 用于自动保存和恢复向导进度
  */
 
-const STORAGE_KEY = 'me_wizard_draft';
+const STORAGE_KEY: string = 'me_wizard_draft';
 const STORAGE_VERSION = '1.0';
 
-export function saveDraft(data) {
+export function saveDraft(data: Record<string, unknown>): boolean {
   try {
     const payload = {
       version: STORAGE_VERSION,
@@ -21,7 +21,7 @@ export function saveDraft(data) {
   }
 }
 
-export function loadDraft() {
+export function loadDraft(): Record<string, unknown> | null {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return null;
@@ -68,7 +68,7 @@ export function getDraftTimestamp() {
 }
 
 // 防抖保存
-export function debounceSave(data, delay = 1000) {
+export function debounceSave(data: Record<string, unknown>, delay: number = 1000): void {
   if (typeof window !== 'undefined' && window.debounceTimer) {
     clearTimeout(window.debounceTimer);
   }

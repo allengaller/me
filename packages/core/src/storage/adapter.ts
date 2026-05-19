@@ -1,5 +1,5 @@
 import { Hub } from '../types/hub.js';
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -152,7 +152,6 @@ export class JsonStorageAdapter implements StorageAdapter {
       for (const v of toDelete) {
         const filePath = join(this.historyDir, `${v.id}.json`);
         if (existsSync(filePath)) {
-          const { unlinkSync } = require('fs');
           unlinkSync(filePath);
         }
       }
@@ -213,7 +212,6 @@ export class JsonStorageAdapter implements StorageAdapter {
    */
   async delete(): Promise<void> {
     if (existsSync(this.hubPath)) {
-      const { unlinkSync } = require('fs');
       unlinkSync(this.hubPath);
     }
   }

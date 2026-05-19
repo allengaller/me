@@ -35,7 +35,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-  import { loadDraft } from '../utils/storage.js';
+  import { loadDraft } from '../utils/storage';
 
   const draft = loadDraft();
   const iframe = document.getElementById('preview-iframe');

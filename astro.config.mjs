@@ -1,22 +1,12 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://yourusername.dev',
+  site: 'https://allengaller.github.io',
   base: '/',
   trailingSlash: 'ignore',
   build: {
     format: 'file',
     inlineStylesheets: 'auto'
   },
-  compressHTML: true,
-  vite: {
-    optimizeDeps: {
-      exclude: ['aria-query', 'axobject-query']
-    },
-    build: {
-      rollupOptions: {
-        external: ['aria-query', 'axobject-query']
-      }
-    }
-  }
+  compressHTML: true
 });

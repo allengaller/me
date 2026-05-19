@@ -3,6 +3,8 @@ import Layout from '../../layouts/Layout.astro';
 import ProgressBar from '../../components/wizard/ProgressBar.astro';
 import FormField from '../../components/wizard/FormField.astro';
 import WizardNav from '../../components/wizard/WizardNav.astro';
+
+import '../../styles/wizard-shared.css';
 ---
 
 <Layout>
@@ -61,7 +63,7 @@ import WizardNav from '../../components/wizard/WizardNav.astro';
 </Layout>
 
 <script>
-  import { loadDraft, saveDraft } from '../../utils/storage.js';
+  import { loadDraft, saveDraft } from '../../utils/storage';
   
   const lobsterList = document.getElementById('lobster-list');
   const addBtn = document.getElementById('add-lobster');
@@ -148,6 +150,7 @@ import WizardNav from '../../components/wizard/WizardNav.astro';
 </script>
 
 <style>
+  @import '../../styles/wizard-shared.css';
   .wizard-page {
     min-height: calc(100vh - 56px);
     padding: 3rem 2rem 4rem;

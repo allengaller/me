@@ -1,5 +1,6 @@
 import { PrivacyLevel } from '../types/base.js';
-import { Hub, Dimension } from '../types/hub.js';
+import { Hub } from '../types/hub.js';
+import { Dimension } from '../types/dimensions.js';
 
 /**
  * User roles for privacy checks

@@ -15,7 +15,7 @@ export function exportToJson(profile, pretty = true) {
   return pretty ? JSON.stringify(data, null, 2) : JSON.stringify(data);
 }
 
-export function downloadJson(profile, filename = 'profile.json') {
+export function downloadJSON(profile: Record<string, any>, filename: string = 'profile.json'): void {
   const content = exportToJson(profile);
   const blob = new Blob([content], { type: 'application/json' });
   const url = URL.createObjectURL(blob);

@@ -3,7 +3,7 @@
  * 根据用户资料生成标准化的 SOUL.md 文件
  */
 
-export function generateSoulMd(profile) {
+export function generateSoulMd(profile: Record<string, any>): string {
   const date = new Date().toISOString().split('T')[0];
   
   let md = `# SOUL.md - ${profile.name || 'Anonymous'}
@@ -151,7 +151,7 @@ ${profile.about || 'No bio provided.'}
   return md;
 }
 
-export function downloadSoulMd(profile, filename = 'SOUL.md') {
+export function downloadSoulMd(profile: Record<string, any>, filename: string = 'SOUL.md'): void {
   const content = generateSoulMd(profile);
   const blob = new Blob([content], { type: 'text/markdown' });
   const url = URL.createObjectURL(blob);

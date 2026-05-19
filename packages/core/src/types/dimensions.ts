@@ -1,4 +1,4 @@
-import { BaseEntity, Localized, ProficiencyLevel, Evidence, SkillCategory, InterestCategory, ExperienceCategory, GoalCategory, GoalStatus, ResourceCategory, Achievement } from './base.js';
+import { BaseEntity, Localized, ProficiencyLevel, Evidence, SkillCategory, InterestCategory, ExperienceCategory, GoalCategory, GoalStatus, ResourceCategory, Achievement, PrivacyLevel } from './base.js';
 
 // ============================================
 // IDENTITY DIMENSION
@@ -127,8 +127,11 @@ export interface Course extends Evidence {
   certificateUrl?: string;
 }
 
-export interface Reading extends Evidence {
+export interface Reading {
   type: 'book' | 'article' | 'paper' | 'blog';
+  source: string;
+  retrievedAt: string;
+  confidence: number;
   title: string;
   author: string;
   date?: string;

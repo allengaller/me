@@ -91,9 +91,9 @@ import SoulExport from '../../components/export/SoulExport.astro';
 </Layout>
 
 <script>
-  import { loadDraft, clearDraft } from '../../utils/storage.js';
-  import { downloadJson } from '../../utils/exporters/json.js';
-  import { downloadYaml } from '../../utils/exporters/yaml.js';
+  import { loadDraft, clearDraft } from '../../utils/storage';
+  import { downloadJSON } from '../../utils/exporters/json';
+  import { downloadYAML } from '../../utils/exporters/yaml';
 
   const draft = loadDraft();
 
@@ -105,11 +105,11 @@ import SoulExport from '../../components/export/SoulExport.astro';
   }
 
   document.getElementById('download-json').addEventListener('click', () => {
-    if (draft) { downloadJson(draft); } else { alert('No data available'); }
+    if (draft) { downloadJSON(draft); } else { alert('No data available'); }
   });
 
   document.getElementById('download-yaml').addEventListener('click', () => {
-    if (draft) { downloadYaml(draft); } else { alert('No data available'); }
+    if (draft) { downloadYAML(draft); } else { alert('No data available'); }
   });
 
   document.getElementById('reset-btn').addEventListener('click', () => {

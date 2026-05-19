@@ -3,7 +3,7 @@
  * 支持导入 profile.json 和其他格式的 JSON
  */
 
-export function importFromJson(jsonString) {
+export function importFromJson(jsonString: string): Record<string, any> {
   try {
     const data = JSON.parse(jsonString);
     
@@ -36,14 +36,14 @@ export function importFromJson(jsonString) {
     return normalized;
     
   } catch (error) {
-    if (error.message.includes('JSON')) {
+    if ((error as Error).message.includes('JSON')) {
       throw new Error('Invalid JSON format: ' + error.message);
     }
     throw error;
   }
 }
 
-export function readJsonFile(file) {
+export function readJsonFile(file: File): Promise<Record<string, any>> {
   return new Promise((resolve, reject) => {
     if (!file || file.type !== 'application/json') {
       reject(new Error('Please select a valid JSON file'));
@@ -54,7 +54,7 @@ export function readJsonFile(file) {
     
     reader.onload = (e) => {
       try {
-        const content = e.target.result;
+        const content = e.target?.result as string;
         const data = importFromJson(content);
         resolve(data);
       } catch (error) {

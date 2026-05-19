@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { PrivacyLevel, ProficiencyLevel, SkillCategory, InterestCategory, ExperienceCategory, GoalCategory, ResourceCategory } from '../types/base.js';
+import { PrivacyLevel, ProficiencyLevel, type SkillCategory, type InterestCategory, type ExperienceCategory, type GoalCategory, type ResourceCategory } from '../types/base.js';
+import type { Hub } from '../types/hub.js';
 
 // ============================================
 // BASE SCHEMAS
@@ -81,7 +82,7 @@ export const endorsementSchema = evidenceSchema.extend({
 
 export const skillSchema = baseEntitySchema.extend({
   type: z.literal('skill'),
-  category: z.nativeEnum(SkillCategory),
+  category: z.string() as z.ZodType<SkillCategory>,
   name: localizedStringSchema,
   proficiency: z.nativeEnum(ProficiencyLevel),
   yearsOfExperience: z.number().optional(),
@@ -102,7 +103,7 @@ export const achievementSchema = evidenceSchema.extend({
 
 export const experienceSchema = baseEntitySchema.extend({
   type: z.literal('experience'),
-  category: z.nativeEnum(ExperienceCategory),
+  category: z.string() as z.ZodType<ExperienceCategory>,
   title: localizedStringSchema,
   organization: z.string(),
   location: z.string().optional(),

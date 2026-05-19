@@ -3,7 +3,7 @@
  * 从 GitHub API 获取用户公开资料
  */
 
-export async function importFromGitHub(username) {
+export async function importFromGitHub(username: string): Promise<Record<string, any>> {
   if (!username || typeof username !== 'string') {
     throw new Error('GitHub username is required');
   }
