@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": false,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@me-hub/core": ["./packages/core/src"],
+      "@me-hub/core/*": ["./packages/core/src/*"]
+    }
+  },
+  "include": ["src/**/*", "packages/**/*", "scripts/**/*", "astro.config.mjs"],
+  "exclude": ["node_modules", "dist", "packages/core/dist"]
+}

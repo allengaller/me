@@ -3,6 +3,7 @@
  * 根据用户资料生成标准化的 SOUL.md 文件
  */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function generateSoulMd(profile: Record<string, any>): string {
   const date = new Date().toISOString().split('T')[0];
   
@@ -151,6 +152,7 @@ ${profile.about || 'No bio provided.'}
   return md;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function downloadSoulMd(profile: Record<string, any>, filename: string = 'SOUL.md'): void {
   const content = generateSoulMd(profile);
   const blob = new Blob([content], { type: 'text/markdown' });

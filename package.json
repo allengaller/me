@@ -12,13 +12,13 @@
     "astro": "astro",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint 'src/**/*.ts' 'packages/core/src/**/*.ts'",
-    "format": "prettier --write 'src/**/*.{ts,js,json}' 'packages/core/src/**/*.ts'",
+    "lint": "eslint 'src/**/*.ts' 'scripts/**/*.ts' 'packages/core/src/**/*.ts'",
+    "format": "prettier --write 'src/**/*.{ts,js,json}' 'scripts/**/*.ts' 'packages/core/src/**/*.ts'",
     "typecheck": "tsc --noEmit",
-    "update:profile": "node scripts/update-profile.js",
-    "add:project": "node scripts/add-project.js",
-    "validate": "node scripts/validate.js",
-    "skills": "node scripts/skills.js"
+    "update:profile": "tsx scripts/update-profile.ts",
+    "add:project": "tsx scripts/add-project.ts",
+    "validate": "tsx scripts/validate.ts",
+    "skills": "tsx scripts/skills.ts"
   },
   "dependencies": {
     "astro": "^4.16.17"
@@ -31,8 +31,10 @@
     "@typescript-eslint/parser": "^8.59.3",
     "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.8",
+    "happy-dom": "^20.10.1",
     "jsdom": "^29.1.1",
     "prettier": "^3.8.3",
+    "tsx": "^4.22.4",
     "vitest": "^4.1.6"
   }
 }

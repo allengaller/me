@@ -8,6 +8,44 @@
 import type { Hub } from '../../packages/core/src/types/hub.js';
 import { PrivacyLevel } from '../../packages/core/src/types/base.js';
 
+interface ProfileSocial {
+  platform: string;
+  url: string;
+}
+
+interface ProfileSkill {
+  name?: string;
+  name_zh?: string;
+  level?: string;
+}
+
+interface ProfileExperience {
+  title?: string;
+  title_zh?: string;
+  company?: string;
+  period?: string;
+  description?: string;
+  description_zh?: string;
+  achievements?: string[];
+}
+
+interface Profile {
+  profile?: {
+    name?: string;
+    name_zh?: string;
+    title?: string;
+    title_zh?: string;
+    location?: string;
+    about?: string;
+    about_zh?: string;
+    avatar?: string;
+    contact?: string;
+  };
+  social?: ProfileSocial[];
+  skills?: ProfileSkill[];
+  experience?: ProfileExperience[];
+}
+
 /**
  * Generate a simple unique ID
  */
@@ -19,7 +57,7 @@ function genId(): string {
  * Convert a flat profile.json to a partial Hub structure.
  * This is a lossy conversion — the Hub format is richer.
  */
-export function profileToHub(profile: Record<string, any>): Partial<Hub> {
+export function profileToHub(profile: Profile): Partial<Hub> {
   const now = new Date().toISOString();
 
   return {
@@ -45,12 +83,12 @@ export function profileToHub(profile: Record<string, any>): Partial<Hub> {
       contact: {
         email: profile.profile?.contact || undefined,
         urls: Object.fromEntries(
-          (profile.social || []).map((s: any) => [s.platform.toLowerCase(), s.url])
+          (profile.social || []).map((s: ProfileSocial) => [s.platform.toLowerCase(), s.url])
         ),
       },
       about: { en: profile.profile?.about || '', zh: profile.profile?.about_zh || '' },
     },
-    skills: (profile.skills || []).map((s: any) => ({
+    skills: (profile.skills || []).map((s: ProfileSkill) => ({
       id: genId(),
       type: 'skill' as const,
       createdAt: now,
@@ -65,7 +103,7 @@ export function profileToHub(profile: Record<string, any>): Partial<Hub> {
       certifications: [],
       endorsements: [],
     })),
-    experience: (profile.experience || []).map((e: any) => ({
+    experience: (profile.experience || []).map((e: ProfileExperience) => ({
       id: genId(),
       type: 'experience' as const,
       createdAt: now,
@@ -107,7 +145,7 @@ export function profileToHub(profile: Record<string, any>): Partial<Hub> {
 /**
  * Convert Hub back to the flat profile.json format for backward compatibility.
  */
-export function hubToProfile(hub: Hub): Record<string, any> {
+export function hubToProfile(hub: Hub): Record<string, unknown> {
   return {
     profile: {
       name: hub.identity.namePreferred || hub.identity.name?.en || '',
@@ -151,7 +189,7 @@ export function hubToProfile(hub: Hub): Record<string, any> {
 
 // --- Helpers ---
 
-function mapLevel(level: string): 1 | 2 | 3 | 4 | 5 {
+function mapLevel(level: string | undefined): 1 | 2 | 3 | 4 | 5 {
   const map: Record<string, 1 | 2 | 3 | 4 | 5> = {
     beginner: 1,
     novice: 1,

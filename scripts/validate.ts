@@ -1,11 +1,5 @@
 #!/usr/bin/env node
 
-/**
- * 验证配置文件脚本
- * Usage: npm run validate
- * 验证 JSON 配置文件的语法和结构
- */
-
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -15,19 +9,46 @@ const __dirname = path.dirname(__filename);
 
 const CONFIG_PATH = path.join(__dirname, '../src/config/profile.json');
 
-function validateJSON(content) {
+interface ValidationResult {
+  valid: boolean;
+  errors: string[];
+}
+
+interface SocialItem {
+  platform: string;
+  url: string;
+  github?: string;
+  live?: string;
+}
+
+interface Project {
+  title: string;
+  description: string;
+  technologies: string[];
+  github?: string;
+  live?: string;
+}
+
+interface ProfileConfig {
+  projects?: Project[];
+  skills?: Record<string, unknown>[];
+  social?: SocialItem[];
+  [key: string]: unknown;
+}
+
+function validateJSON(content: string): ValidationResult {
   try {
     JSON.parse(content);
     return { valid: true, errors: [] };
-  } catch (error) {
+  } catch (error: unknown) {
     return {
       valid: false,
-      errors: [error.message]
+      errors: [(error as Error).message]
     };
   }
 }
 
-function validateURL(url) {
+function validateURL(url: string): boolean {
   try {
     new URL(url);
     return true;
@@ -36,10 +57,9 @@ function validateURL(url) {
   }
 }
 
-function deepValidation(config) {
-  const warnings = [];
+function deepValidation(config: ProfileConfig): string[] {
+  const warnings: string[] = [];
 
-  // 检查 URL 格式
   if (config.social) {
     config.social.forEach((item, index) => {
       if (item.url && !validateURL(item.url)) {
@@ -66,7 +86,6 @@ function main() {
   console.log('🔍 验证配置文件...\n');
 
   try {
-    // 检查文件是否存在
     if (!fs.existsSync(CONFIG_PATH)) {
       console.error('❌ 配置文件不存在:', CONFIG_PATH);
       process.exit(1);
@@ -74,7 +93,6 @@ function main() {
 
     const content = fs.readFileSync(CONFIG_PATH, 'utf8');
 
-    // 验证 JSON 语法
     const jsonValidation = validateJSON(content);
     if (!jsonValidation.valid) {
       console.error('❌ JSON 语法错误:\n');
@@ -82,10 +100,8 @@ function main() {
       process.exit(1);
     }
 
-    // 解析配置
-    const config = JSON.parse(content);
+    const config: ProfileConfig = JSON.parse(content);
 
-    // 深度验证
     const warnings = deepValidation(config);
 
     console.log('✅ 配置文件验证通过!\n');
@@ -104,9 +120,9 @@ function main() {
 
     console.log('✨ 配置文件一切正常!\n');
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('❌ 验证失败:');
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exit(1);
   }
 }

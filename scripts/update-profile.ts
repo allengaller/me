@@ -1,11 +1,5 @@
 #!/usr/bin/env node
 
-/**
- * 更新个人资料脚本
- * Usage: npm run update:profile
- * 该脚本帮助验证和格式化 JSON 配置文件
- */
-
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -15,21 +9,48 @@ const __dirname = path.dirname(__filename);
 
 const CONFIG_PATH = path.join(__dirname, '../src/config/profile.json');
 
-function validateConfig(config) {
-  const requiredFields = ['profile', 'social', 'skills', 'projects', 'experience'];
+interface SocialItem {
+  platform: string;
+  url: string;
+}
 
-  const errors = [];
+interface Skill {
+  name: string;
+  level: string;
+  technologies: string[];
+}
 
-  // 验证必填字段
+interface Project {
+  title: string;
+  description: string;
+  technologies: string[];
+}
+
+interface ProfileConfig {
+  profile: {
+    name: string;
+    title: string;
+    location: string;
+    about: string;
+  };
+  social: SocialItem[];
+  skills: Skill[];
+  projects: Project[];
+  experience: Record<string, unknown>[];
+}
+
+function validateConfig(config: ProfileConfig): string[] {
+  const requiredFields: (keyof ProfileConfig)[] = ['profile', 'social', 'skills', 'projects', 'experience'];
+  const errors: string[] = [];
+
   requiredFields.forEach(field => {
     if (!config[field]) {
       errors.push(`缺少必填字段: ${field}`);
     }
   });
 
-  // 验证 profile 字段
   if (config.profile) {
-    const profileFields = ['name', 'title', 'location', 'about'];
+    const profileFields: (keyof ProfileConfig['profile'])[] = ['name', 'title', 'location', 'about'];
     profileFields.forEach(field => {
       if (!config.profile[field]) {
         errors.push(`profile.${field} 是必填字段`);
@@ -37,7 +58,6 @@ function validateConfig(config) {
     });
   }
 
-  // 验证 social 字段
   if (config.social) {
     if (!Array.isArray(config.social) || config.social.length === 0) {
       errors.push('social 必须是一个非空数组');
@@ -50,7 +70,6 @@ function validateConfig(config) {
     }
   }
 
-  // 验证 skills 字段
   if (config.skills) {
     if (!Array.isArray(config.skills) || config.skills.length === 0) {
       errors.push('skills 必须是一个非空数组');
@@ -63,7 +82,6 @@ function validateConfig(config) {
     }
   }
 
-  // 验证 projects 字段
   if (config.projects) {
     if (!Array.isArray(config.projects) || config.projects.length === 0) {
       errors.push('projects 必须是一个非空数组');
@@ -83,11 +101,9 @@ function main() {
   console.log('🔍 验证个人资料配置...\n');
 
   try {
-    // 读取配置文件
     const configContent = fs.readFileSync(CONFIG_PATH, 'utf8');
-    const config = JSON.parse(configContent);
+    const config: ProfileConfig = JSON.parse(configContent);
 
-    // 验证配置
     const errors = validateConfig(config);
 
     if (errors.length > 0) {
@@ -96,14 +112,12 @@ function main() {
       process.exit(1);
     }
 
-    // 格式化并写回文件
     const jsonContent = JSON.stringify(config, null, 2);
     fs.writeFileSync(CONFIG_PATH, jsonContent, 'utf8');
 
     console.log('✅ 配置文件验证成功!');
     console.log('📝 配置文件已格式化\n');
 
-    // 显示配置摘要
     console.log('📊 配置摘要:');
     console.log(`  - 姓名: ${config.profile.name}`);
     console.log(`  - 职位: ${config.profile.title}`);
@@ -114,9 +128,9 @@ function main() {
 
     console.log('💡 提示: 运行 npm run dev 查看更新后的主页\n');
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('❌ 处理配置文件时出错:');
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exit(1);
   }
 }

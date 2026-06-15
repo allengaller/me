@@ -42,11 +42,9 @@ export class LocalStorageAdapter implements StorageAdapter {
     return `${this.prefix}${VERSION_PREFIX}`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private getStorage(): any {
-    // Use typeof check to avoid direct reference to 'window' which may not exist in Node
+  private getStorage(): Storage {
     if (typeof globalThis !== 'undefined' && 'localStorage' in globalThis) {
-      return (globalThis as Record<string, unknown>).localStorage;
+      return (globalThis as { localStorage: Storage }).localStorage;
     }
     throw new Error('LocalStorageAdapter requires a browser environment with localStorage');
   }

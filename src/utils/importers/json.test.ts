@@ -101,6 +101,7 @@ describe('json importer', () => {
     }
 
     it('should reject if file is null', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await expect(readJsonFile(null as any)).rejects.toThrow('valid JSON file');
     });
 

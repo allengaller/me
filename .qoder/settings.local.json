@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls node_modules/.bin/tsx node_modules/.bin/ts-node node_modules/.bin/astro 2>/dev/null || echo \"checking global\"; which tsx ts-node 2>/dev/null || echo \"none found\")",
+      "Bash(cd /Users/allengaller/Documents/GitHub/allengaller/me && npm install --save-dev happy-dom tsx --silent 2>&1 | tail -5)",
+      "Bash(cd /Users/allengaller/Documents/GitHub/allengaller/me && mkdir -p docs && mv EVALUATION.md docs/ && mv FIX-REPORT.md docs/ && ls docs/)",
+      "Bash(mv scripts/add-project.js scripts/add-project.ts && mv scripts/update-profile.js scripts/update-profile.ts && mv scripts/validate.js scripts/validate.ts && mv scripts/skills.js scripts/skills.ts)",
+      "Bash(npm run lint 2>&1 | tail -30)",
+      "Bash(npx eslint 'src/**/*.ts' 'scripts/**/*.ts' 'packages/core/src/**/*.ts' 2>&1 | tail -40)",
+      "Bash(npx eslint src/utils/hub-bridge.ts 2>&1)",
+      "Bash(node node_modules/.bin/eslint 'src/**/*.ts' 'scripts/**/*.ts' 'packages/core/src/**/*.ts' 2>&1 | tail -40)",
+      "Bash(node:*)",
+      "Bash(npm test 2>&1 | tail -40)",
+      "Bash(node node_modules/.bin/vitest run 2>&1 | tail -20)",
+      "Bash(./node_modules/.bin/vitest run:*)",
+      "Bash(git stash && ./node_modules/.bin/vitest run 2>/dev/null | tail -10)",
+      "Bash(git stash:*)",
+      "Bash(rm:*)",
+      "Bash(git stash && node -e \"\nimport\\('vitest/node'\\).then\\(\\({startVitest}\\) => {\n  startVitest\\('test', [], { run: true }\\);\n}\\);\n\" 2>&1 | tail -15)",
+      "Bash(node node_modules/.bin/astro build 2>&1 | tail -20)",
+      "Bash(git stash && node node_modules/.bin/astro build 2>&1 | grep -E \"\\(ERROR|error|failed|✓ Completed|✗\\)\" | head -10)",
+      "Bash(node node_modules/.bin/tsc --noEmit 2>&1 | head -20)",
+      "Bash(node node_modules/.bin/tsc --noEmit 2>&1 | grep \"error\" | wc -l)",
+      "Bash(node node_modules/.bin/tsc --noEmit 2>&1 | grep \"error\")",
+      "Bash(node node_modules/.bin/tsc --noEmit 2>&1 | grep -E \"error TS\" | grep -v \"reliable-engine\\\\|wizard-engine\\\\|storage\\\\.\\\\|theme\\\\.\\\\|distill-engine\\\\|resume-generator\")",
+      "Bash(node node_modules/.bin/eslint 'src/**/*.ts' 'scripts/**/*.ts' 'packages/core/src/**/*.ts' | grep \"error\")",
+      "Bash(node node_modules/.bin/vitest run 2>/dev/null | grep -E \"Test Files|Tests \"  )",
+      "Bash(bash -c './node_modules/.bin/vitest run 2>/dev/null' | grep -E \"Test Files|Tests \")",
+      "Bash(./node_modules/.bin/vitest run --reporter=verbose 2>&1 | grep -E \"Test Files|Tests \" )"
+    ]
+  }
+}

@@ -3,6 +3,7 @@
  * 支持导入 profile.json 和其他格式的 JSON
  */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function importFromJson(jsonString: string): Record<string, any> {
   try {
     const data = JSON.parse(jsonString);
@@ -43,6 +44,7 @@ export function importFromJson(jsonString: string): Record<string, any> {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function readJsonFile(file: File): Promise<Record<string, any>> {
   return new Promise((resolve, reject) => {
     if (!file || file.type !== 'application/json') {

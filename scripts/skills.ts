@@ -12,10 +12,81 @@ const CONFIG_PATH = path.join(__dirname, '../src/config/profile.json');
 const PREFERENCES_PATH = path.join(homedir(), '.config', 'skilltree', 'preferences.json');
 
 // ─────────────────────────────────────────────────────────────
+// TYPES
+// ─────────────────────────────────────────────────────────────
+
+interface Theme {
+  name: string;
+  bg: string;
+  primary: string;
+  secondary: string;
+  accent: string;
+  success: string;
+  warning: string;
+  danger: string;
+  info: string;
+  text: string;
+  textDim: string;
+  muted: string;
+  border: string;
+  highlight: string;
+  barFill: string;
+  barEmpty: string;
+  searchMatch: string;
+  reset?: string;
+  bold?: string;
+  dim?: string;
+}
+
+type ThemeName = 'dark' | 'light' | 'nord' | 'tokyo';
+
+interface Preferences {
+  theme: string;
+  keybindings: string;
+}
+
+interface Technology {
+  name: string;
+  progress: number;
+  note: string;
+}
+
+interface Skill {
+  name: string;
+  name_zh?: string;
+  note?: string;
+  level: string;
+  level_zh?: string;
+  technologies: (string | Technology)[];
+}
+
+interface SkillConfig {
+  skills: Skill[];
+  [key: string]: unknown;
+}
+
+interface AppState {
+  config: SkillConfig;
+  prefs: Preferences;
+  theme: Theme;
+  levelColors: string[];
+  selected: number;
+  mode: string;
+  searchQuery: string;
+  filteredIndices: number[];
+  confirmAction: null;
+  notification: string | null;
+  notificationTime: number;
+  viewport: { start: number; end: number };
+  commandInput?: string;
+  pendingAction?: string;
+}
+
+// ─────────────────────────────────────────────────────────────
 // THEME ENGINE
 // ─────────────────────────────────────────────────────────────
 
-const THEMES = {
+const THEMES: Record<ThemeName, Theme> = {
   dark: {
     name: 'Dark',
     bg: '\x1b[48;5;16m',
@@ -98,7 +169,7 @@ const THEMES = {
 // PREFERENCES
 // ─────────────────────────────────────────────────────────────
 
-function loadPreferences() {
+function loadPreferences(): Preferences {
   try {
     const dir = path.dirname(PREFERENCES_PATH);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -109,7 +180,7 @@ function loadPreferences() {
   return { theme: 'dark', keybindings: 'default' };
 }
 
-function savePreferences(prefs) {
+function savePreferences(prefs: Preferences): void {
   try {
     const dir = path.dirname(PREFERENCES_PATH);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -124,24 +195,24 @@ function savePreferences(prefs) {
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
 const LEVELS_ZH = ['入门', '中级', '高级', '专家'];
 const LEVEL_FILLED = [5, 10, 15, 20];
-const LEVEL_COLORS = {
+const LEVEL_COLORS: Record<ThemeName, string[]> = {
   dark:   ['\x1b[38;5;210m', '\x1b[38;5;220m', '\x1b[38;5;117m', '\x1b[38;5;114m'],
   light:  ['\x1b[38;5;124m', '\x1b[38;5;136m', '\x1b[38;5;25m',  '\x1b[38;5;34m'],
   nord:   ['\x1b[38;5;203m', '\x1b[38;5;220m', '\x1b[38;5;117m', '\x1b[38;5;72m'],
   tokyo:  ['\x1b[38;5;204m', '\x1b[38;5;228m', '\x1b[38;5;117m', '\x1b[38;5;120m'],
 };
 
-const DEFAULT_KEYBINDINGS = {
+const _DEFAULT_KEYBINDINGS = {
   navigation: { up: ['k', '\x1b[A'], down: ['j', '\x1b[B'] },
   actions: { add: 'a', edit: 'e', delete: 'd', quit: 'q' },
   modes: { search: '/', command: ':' },
 };
 
-function loadConfig() {
+function loadConfig(): SkillConfig {
   return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
 }
 
-function saveConfig(config) {
+function saveConfig(config: SkillConfig): void {
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf8');
 }
 
@@ -149,12 +220,12 @@ function saveConfig(config) {
 // STATE MANAGER
 // ─────────────────────────────────────────────────────────────
 
-function createState(config, prefs) {
-  const themeKey = prefs.theme in LEVEL_COLORS ? prefs.theme : 'dark';
+function createState(config: SkillConfig, prefs: Preferences): AppState {
+  const themeKey = (prefs.theme in LEVEL_COLORS ? prefs.theme : 'dark') as ThemeName;
   return {
     config,
     prefs,
-    theme: THEMES[prefs.theme] || THEMES.dark,
+    theme: THEMES[prefs.theme as ThemeName] || THEMES.dark,
     levelColors: LEVEL_COLORS[themeKey],
     selected: config.skills.length > 0 ? 0 : -1,
     mode: 'normal', // normal | search | command | confirm
@@ -167,17 +238,17 @@ function createState(config, prefs) {
   };
 }
 
-function getDisplayIndex(state) {
+function getDisplayIndex(state: AppState): number {
   if (state.mode === 'search' && state.searchQuery) {
     return state.filteredIndices[state.selected] ?? -1;
   }
   return state.selected;
 }
 
-function filterSkills(skills, query) {
+function filterSkills(skills: Skill[], query: string): number[] {
   if (!query) return skills.map((_, i) => i);
   const q = query.toLowerCase();
-  return skills.reduce((acc, s, i) => {
+  return skills.reduce<number[]>((acc, s, i) => {
     if (
       s.name.toLowerCase().includes(q) ||
       (s.name_zh && s.name_zh.includes(q)) ||
@@ -193,36 +264,36 @@ function filterSkills(skills, query) {
 // INPUT
 // ─────────────────────────────────────────────────────────────
 
-function question(prompt) {
+function question(prompt: string): Promise<string> {
   return new Promise((resolve) => {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     rl.question(prompt, (answer) => { rl.close(); resolve(answer); });
   });
 }
 
-function normTech(t) {
+function normTech(t: string | Technology): Technology {
   if (typeof t === 'string') return { name: t, progress: 0, note: '' };
   return { name: t.name || '', progress: t.progress ?? 0, note: t.note || '' };
 }
 
-function pColor(p, theme) {
+function pColor(p: number, theme: Theme): string {
   if (p <= 25) return theme.danger;
   if (p <= 50) return theme.warning;
   if (p <= 75) return theme.info;
   return theme.success;
 }
 
-function miniBar(progress, theme) {
+function miniBar(progress: number, theme: Theme): string {
   const filled = Math.round(progress / 10);
   return `${pColor(progress, theme)}${'█'.repeat(filled)}${theme.barEmpty}${'░'.repeat(10 - filled)}`;
 }
 
-function makeBar(levelIdx, theme, levelColors) {
+function makeBar(levelIdx: number, theme: Theme, levelColors: string[]): string {
   const filled = LEVEL_FILLED[levelIdx];
   return `${levelColors[levelIdx]}${'█'.repeat(filled)}${theme.barEmpty}${'░'.repeat(20 - filled)}`;
 }
 
-function notify(state, msg, duration = 2000) {
+function notify(state: AppState, msg: string, duration = 2000): AppState {
   return { ...state, notification: msg, notificationTime: Date.now() + duration };
 }
 
@@ -230,19 +301,19 @@ function notify(state, msg, duration = 2000) {
 // RENDERER
 // ─────────────────────────────────────────────────────────────
 
-function clear() {
+function clear(): void {
   process.stdout.write('\x1Bc');
 }
 
-function clearLine() {
+function clearLine(): void {
   process.stdout.write('\x1b[2K\r');
 }
 
-function moveCursor(x, y) {
+function moveCursor(x: number, y: number): void {
   process.stdout.write(`\x1b[${y};${x}H`);
 }
 
-function render(state) {
+function render(state: AppState): void {
   const { theme, config, prefs } = state;
   const skills = config.skills;
   const selected = getDisplayIndex(state);
@@ -303,7 +374,7 @@ function render(state) {
   process.stdout.write(prompt);
 }
 
-function renderEmptyState(theme) {
+function renderEmptyState(theme: Theme): void {
   console.log(`                 ${theme.secondary}✦${theme.reset}`);
   console.log(`                 ${theme.secondary}│${theme.reset}`);
   console.log(`              ${theme.secondary}╔═══╧═══╗${theme.reset}`);
@@ -318,7 +389,7 @@ function renderEmptyState(theme) {
   console.log();
 }
 
-function renderSkillTree(skills, selected, theme, LC, state) {
+function renderSkillTree(skills: Skill[], selected: number, theme: Theme, LC: string[], state: AppState): void {
   const displayIdx = state.mode === 'search' ? state.selected : 0;
   const actualSelected = state.mode === 'search' ? state.filteredIndices[displayIdx] : selected;
 
@@ -383,7 +454,7 @@ function renderSkillTree(skills, selected, theme, LC, state) {
   console.log(`  ${theme.border}╰${theme.border}──${theme.secondary}🌳${theme.border}──${theme.reset}`);
 }
 
-function renderStatusBar(state) {
+function renderStatusBar(state: AppState): void {
   const { theme, config, prefs } = state;
   const skills = config.skills;
   const totalTechs = skills.reduce((acc, s) => acc + (s.technologies?.length || 0), 0);
@@ -417,7 +488,7 @@ function renderStatusBar(state) {
 // ACTIONS
 // ─────────────────────────────────────────────────────────────
 
-async function addSkill(state) {
+async function addSkill(state: AppState): Promise<AppState | null> {
   const { theme, config } = state;
   console.log(`\n  ${theme.success}${theme.bold}+ Add New Skill${theme.reset}\n`);
 
@@ -449,7 +520,7 @@ async function addSkill(state) {
   return notify(state, `Added "${skill.name}"`);
 }
 
-async function editSkill(state, index) {
+async function editSkill(state: AppState, index: number): Promise<AppState> {
   const { theme, config } = state;
   if (index < 0 || index >= config.skills.length) return state;
 
@@ -481,7 +552,7 @@ async function editSkill(state, index) {
   return notify(state, `Updated "${name}"`);
 }
 
-async function deleteSkill(state, index) {
+async function deleteSkill(state: AppState, index: number): Promise<AppState> {
   const { theme, config } = state;
   if (index < 0 || index >= config.skills.length) return state;
 
@@ -502,7 +573,7 @@ async function deleteSkill(state, index) {
   return state;
 }
 
-async function manageTechs(technologies, theme, state) {
+async function manageTechs(technologies: (string | Technology)[], theme: Theme, state: AppState): Promise<Technology[]> {
   let techs = technologies.map(normTech);
 
   while (true) {
@@ -546,7 +617,7 @@ async function manageTechs(technologies, theme, state) {
   return techs;
 }
 
-async function inputTech(existing, theme) {
+async function inputTech(existing: Technology | null, theme: Theme): Promise<Technology | null> {
   const d = existing || { name: '', progress: 0, note: '' };
   const name = (await question(`    ${theme.primary}Name${theme.reset} [${d.name}]: `)).trim() || d.name;
   if (!name) return null;
@@ -557,7 +628,7 @@ async function inputTech(existing, theme) {
   return { name, progress, note };
 }
 
-async function handleCommand(state, cmd) {
+async function handleCommand(state: AppState, cmd: string): Promise<AppState> {
   const { theme, prefs, config } = state;
   const parts = cmd.trim().slice(1).split(/\s+/);
   const action = parts[0]?.toLowerCase();

@@ -69,7 +69,9 @@ describe('github importer', () => {
   });
 
   it('should throw error for null/undefined username', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await expect(importFromGitHub(null as any)).rejects.toThrow('GitHub username is required');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await expect(importFromGitHub(undefined as any)).rejects.toThrow('GitHub username is required');
   });
 
@@ -137,7 +139,7 @@ describe('github importer', () => {
   it('should exclude forked repos from projects', async () => {
     mockFetchSuccess();
     const result = await importFromGitHub('testuser');
-    const projectNames = result.projects.map((p: any) => p.title);
+    const projectNames = result.projects.map((p: { title: string }) => p.title);
     expect(projectNames).not.toContain('forked-repo');
     expect(projectNames).toContain('cool-project');
   });
@@ -145,7 +147,7 @@ describe('github importer', () => {
   it('should map repo data to project structure correctly', async () => {
     mockFetchSuccess();
     const result = await importFromGitHub('testuser');
-    const project = result.projects.find((p: any) => p.title === 'cool-project');
+    const project = result.projects.find((p: { title: string }) => p.title === 'cool-project');
     expect(project).toBeDefined();
     expect(project.description).toBe('A cool project');
     expect(project.technologies).toEqual(['TypeScript']);

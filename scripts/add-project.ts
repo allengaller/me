@@ -1,11 +1,5 @@
 #!/usr/bin/env node
 
-/**
- * 添加新项目脚本
- * Usage: npm run add:project
- * 交互式地添加新项目到配置文件
- */
-
 import fs from 'fs';
 import path from 'path';
 import readline from 'readline';
@@ -21,16 +15,30 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-function question(prompt) {
+function question(prompt: string): Promise<string> {
   return new Promise((resolve) => {
     rl.question(prompt, resolve);
   });
 }
 
-async function collectProjectInfo() {
+interface Project {
+  title: string;
+  description: string;
+  technologies: string[];
+  github: string;
+  live: string;
+  highlights: string[];
+}
+
+interface ProfileConfig {
+  projects: Project[];
+  [key: string]: unknown;
+}
+
+async function collectProjectInfo(): Promise<Project> {
   console.log('\n📦 添加新项目\n');
 
-  const project = {
+  const project: Project = {
     title: await question('项目名称: '),
     description: await question('项目描述: '),
     technologies: [],
@@ -39,17 +47,14 @@ async function collectProjectInfo() {
     highlights: []
   };
 
-  // 收集技术栈
   const techInput = await question('技术栈 (用逗号分隔, 例如: Go, Docker, Kubernetes): ');
   if (techInput) {
     project.technologies = techInput.split(',').map(t => t.trim());
   }
 
-  // 可选字段
   project.github = await question('GitHub URL (可选, 直接回车跳过): ') || '';
   project.live = await question('Live URL (可选, 直接回车跳过): ') || '';
 
-  // 收集亮点
   const highlightsInput = await question('项目亮点 (用逗号分隔, 可选): ');
   if (highlightsInput) {
     project.highlights = highlightsInput.split(',').map(h => h.trim());
@@ -61,14 +66,12 @@ async function collectProjectInfo() {
 async function main() {
   try {
     const configContent = fs.readFileSync(CONFIG_PATH, 'utf8');
-    const config = JSON.parse(configContent);
+    const config: ProfileConfig = JSON.parse(configContent);
 
     const newProject = await collectProjectInfo();
 
-    // 添加到项目列表开头
     config.projects.unshift(newProject);
 
-    // 写回文件
     const jsonContent = JSON.stringify(config, null, 2);
     fs.writeFileSync(CONFIG_PATH, jsonContent, 'utf8');
 
@@ -77,9 +80,9 @@ async function main() {
     console.log(`🔗 技术栈: ${newProject.technologies.join(', ')}\n`);
     console.log('💡 提示: 运行 npm run dev 查看更新后的主页\n');
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('\n❌ 添加项目时出错:');
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exit(1);
   } finally {
     rl.close();

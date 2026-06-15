@@ -31,8 +31,11 @@ describe('wizard-engine', () => {
     });
 
     it('should convert non-string input to string', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(esc(42 as any)).toBe('42');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(esc(null as any)).toBe('null');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(esc(undefined as any)).toBe('undefined');
     });
 
@@ -61,7 +64,7 @@ describe('wizard-engine', () => {
     }
 
     function createMockDocument() {
-      const elements: Record<string, any> = {};
+      const elements: Record<string, ReturnType<typeof createMockElement>> = {};
       const elementIds = [
         'progressFill', 'progressText', 'qaChapter', 'qaQuestion', 'qaHint',
         'qaInput', 'qaShortcut', 'prevBtn', 'nextBtn', 'previewContent',
@@ -101,7 +104,7 @@ describe('wizard-engine', () => {
     };
 
     let mockLocalStorage: Record<string, string>;
-    let elements: Record<string, any>;
+    let elements: Record<string, ReturnType<typeof createMockElement>>;
 
     beforeEach(() => {
       mockLocalStorage = {};

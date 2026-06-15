@@ -3,6 +3,7 @@
  * 从 GitHub API 获取用户公开资料
  */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function importFromGitHub(username: string): Promise<Record<string, any>> {
   if (!username || typeof username !== 'string') {
     throw new Error('GitHub username is required');
@@ -98,10 +99,10 @@ export async function importFromGitHub(username: string): Promise<Record<string,
     
     return imported;
     
-  } catch (error) {
-    if (error.message.includes('not found')) {
+  } catch (error: unknown) {
+    if ((error as Error).message?.includes('not found')) {
       throw error;
     }
-    throw new Error(`Failed to import from GitHub: ${error.message}`);
+    throw new Error(`Failed to import from GitHub: ${(error as Error).message}`);
   }
 }
