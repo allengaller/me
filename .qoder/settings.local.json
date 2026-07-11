@@ -26,7 +26,8 @@
       "Bash(node node_modules/.bin/eslint 'src/**/*.ts' 'scripts/**/*.ts' 'packages/core/src/**/*.ts' | grep \"error\")",
       "Bash(node node_modules/.bin/vitest run 2>/dev/null | grep -E \"Test Files|Tests \"  )",
       "Bash(bash -c './node_modules/.bin/vitest run 2>/dev/null' | grep -E \"Test Files|Tests \")",
-      "Bash(./node_modules/.bin/vitest run --reporter=verbose 2>&1 | grep -E \"Test Files|Tests \" )"
+      "Bash(./node_modules/.bin/vitest run --reporter=verbose 2>&1 | grep -E \"Test Files|Tests \" )",
+      "Bash(pip install:*)"
     ]
   }
 }
