@@ -21,7 +21,7 @@
     "skills": "tsx scripts/skills.ts"
   },
   "dependencies": {
-    "astro": "^4.16.17"
+    "astro": "^7.1.3"
   },
   "workspaces": [
     "packages/*"
