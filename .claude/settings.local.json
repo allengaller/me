@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:4321/)",
+      "Bash(pkill -f \"astro dev\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4321/)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(gh api *)",
+      "Bash(curl -s https://api.github.com/users/torvalds)",
+      "Bash(curl -s https://api.github.com/users/sindresorhus)",
+      "Bash(curl -s https://api.github.com/users/kelseyhightower)",
+      "Bash(curl -s https://api.github.com/users/wsargent)"
+    ]
+  }
+}
